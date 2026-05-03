@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  // Servicios y Repositorios (Singletons de facto aquí)
   final authService = AuthService();
   final authRepository = AuthRepositoryImpl(authService);
 
@@ -20,10 +19,8 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        // Proveedor para Login
         ChangeNotifierProvider(create: (_) => LoginViewModel(loginUseCase)),
 
-        // Proveedor para Registro (AÑADIDO)
         ChangeNotifierProvider(
           create: (_) => RegisterViewModel(registerUseCase),
         ),
@@ -45,7 +42,6 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        // He ajustado el color para que coincida con el 0xFF0A0F1F que usas en tus pantallas
         scaffoldBackgroundColor: const Color(0xFF0A0F1F),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF42A5F5),

@@ -1,6 +1,6 @@
 import 'package:flee_front/ui/auth/viewmodels/register_view_model.dart';
 import 'package:flee_front/ui/auth/widgets/auth_button_widget.dart';
-import 'package:flee_front/ui/auth/widgets/birthday_picker_widget.dart'; // Importa tu nuevo widget
+import 'package:flee_front/ui/auth/widgets/birthday_picker_widget.dart';
 import 'package:flee_front/ui/auth/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,16 +15,18 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   static const titleCreateAccount = "Create Account";
   static const subtitleCreateAccount = "Create an account in a fleeting moment";
-  static const labelEmail = "Email";
+  static const labelName = "Name";
   static const labelUserName = "User name";
+  static const labelEmail = "Email";
   static const labelPassword = "Password";
   static const labelConfirmPassword = "Confirm password";
   static const btnSignUp = "Sign up";
   static const textAlreadyHave = "Already have an account?";
   static const passwordError = "Password do not match";
 
-  final emailController = TextEditingController();
+  final nameController = TextEditingController();
   final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmController = TextEditingController();
 
@@ -62,8 +64,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 40),
 
                   TextFieldWidget(
-                    controller: emailController,
-                    label: labelEmail,
+                    controller: nameController,
+                    label: labelName,
                     labelColor: const Color(0xFF42A5F5),
                     borderColor: const Color(0xFF42A5F5),
                     fillColor: const Color(0xFF1A1F2E),
@@ -79,17 +81,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  BirthdayPickerWidget(
-                    selectedDate: selectedDate,
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime(2000),
-                        firstDate: DateTime(1920),
-                        lastDate: DateTime.now(),
-                      );
-                      if (date != null) setState(() => selectedDate = date);
-                    },
+                  TextFieldWidget(
+                    controller: emailController,
+                    label: labelEmail,
+                    labelColor: const Color(0xFF42A5F5),
+                    borderColor: const Color(0xFF42A5F5),
+                    fillColor: const Color(0xFF1A1F2E),
                   ),
                   const SizedBox(height: 12),
 
@@ -111,6 +108,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     borderColor: const Color(0xFF42A5F5),
                     fillColor: const Color(0xFF1A1F2E),
                   ),
+
+                  BirthdayPickerWidget(
+                    selectedDate: selectedDate,
+                    onTap: () async {
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime(2000),
+                        firstDate: DateTime(1920),
+                        lastDate: DateTime.now(),
+                      );
+                      if (date != null) setState(() => selectedDate = date);
+                    },
+                  ),
+                  const SizedBox(height: 12),
 
                   if (viewModel.errorMessage != null)
                     Padding(

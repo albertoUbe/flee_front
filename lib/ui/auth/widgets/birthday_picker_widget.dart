@@ -18,9 +18,9 @@ class BirthdayPickerWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1F2E), // Mismo color que tus TextFields
+          color: const Color(0xFF1A1F2E),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: const Color(0xFF42A5F5)),
         ),

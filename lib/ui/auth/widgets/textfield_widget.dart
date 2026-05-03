@@ -5,7 +5,6 @@ class TextFieldWidget extends StatelessWidget {
   final String label;
   final bool obscure;
 
-  // Nuevos parámetros opcionales
   final Color labelColor;
   final Color borderColor;
   final Color fillColor;
@@ -18,7 +17,6 @@ class TextFieldWidget extends StatelessWidget {
     required this.label,
     this.obscure = false,
 
-    // Valores por defecto (azules)
     this.labelColor = const Color(0xFF23B7FC),
     this.borderColor = const Color(0xFF23B7FC),
     this.fillColor = const Color(0xFF1A1F2E), // azul oscuro elegante

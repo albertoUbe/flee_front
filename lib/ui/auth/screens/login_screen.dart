@@ -80,7 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     fillColor: const Color(0xFF1A1F2E),
                   ),
 
-                  // AJUSTE INDISPENSABLE: Mostrar error de login si existe
                   if (model.errorMessage != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 15),

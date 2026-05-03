@@ -19,7 +19,6 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo
               SizedBox(
                 height: 220,
                 child: Image.asset(pathLogo, fit: BoxFit.contain),
@@ -47,7 +46,6 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // BOTONES EN FILA QUE NO OCUPAN TODO EL ANCHO
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

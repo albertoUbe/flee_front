@@ -24,3 +24,15 @@ class ServerFailure extends Exceptions {
 class NetworkFailure extends Exceptions {
   NetworkFailure() : super(Constants.errorConnection);
 }
+
+class UserAlreadyExistsFailure extends Exceptions {
+  UserAlreadyExistsFailure() : super(Constants.errorUserAlreadyExists);
+}
+
+class AuthInvalidFailure extends Exceptions {
+  AuthInvalidFailure() : super(Constants.errorInvalidCredentials);
+}
+
+class UserNotFoundFailure extends Exceptions {
+  UserNotFoundFailure() : super(Constants.errorUserNotFound);
+}

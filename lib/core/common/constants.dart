@@ -15,4 +15,5 @@ class Constants {
   static const String errorUserAlreadyExists =
       "This email address is already registered.";
   static const String errorUnknown = "An unexpected error has occurred.";
+  static const String errorUserNotFound = "User not found.";
 }

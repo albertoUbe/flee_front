@@ -21,8 +21,8 @@ class SidebarWidget extends StatelessWidget {
           // LOGO
           Center(
             child: Container(
-              height: 160,
-              width: 160,
+              height: 200,
+              width: 200,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(

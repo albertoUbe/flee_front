@@ -20,15 +20,17 @@ class AuthService {
   ) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    final user = _testUsers.firstWhere(
-      (u) =>
-          (u["email"] == emailOrUser || u["username"] == emailOrUser) &&
-          u["password"] == password,
-      orElse: () => {},
-    );
+    try {
+      final user = _testUsers.firstWhere(
+        (u) =>
+            (u["email"] == emailOrUser || u["username"] == emailOrUser) &&
+            u["password"] == password,
+      );
 
-    if (user.isEmpty) return null;
-    return user;
+      return user;
+    } catch (e) {
+      throw UserNotFoundFailure();
+    }
   }
 
   Future<Map<String, dynamic>> signUp(Map<String, dynamic> data) async {

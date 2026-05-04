@@ -1,3 +1,4 @@
+import 'package:flee_front/ui/auth/screens/home_screen.dart';
 import 'package:flee_front/ui/auth/screens/register_screen.dart';
 import 'package:flee_front/ui/auth/viewmodels/login_view_model.dart';
 import 'package:flee_front/ui/auth/widgets/auth_button_widget.dart';
@@ -99,11 +100,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: const Color(0xFF1E88E5),
                       textColor: Colors.white,
                       loaderColor: Colors.white,
-                      onPressed: () {
-                        model.login(
+                      onPressed: () async {
+                        await model.login(
                           identifierController.text.trim(),
                           passwordController.text.trim(),
                         );
+                        if (!mounted) return;
+                        if (model.errorMessage == null && !model.isLoading) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => HomeScreen(
+                                emailOrUser: identifierController.text.trim(),
+                              ),
+                            ),
+                            (route) =>
+                                false, // Esto limpia el historial para que no pueda volver atrás al login
+                          );
+                        }
                       },
                     ),
                   ),

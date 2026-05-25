@@ -1,27 +1,43 @@
-import 'package:flee_front/core/common/constants.dart';
-
 class User {
-  final String id;
+  final int id;
+  final int planId;
   final String name;
-  final String username;
   final String email;
-  final String password;
-  final DateTime birthday;
-  final String? picture;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String bio;
+  final String? avatarUrl;
+  final String userStatus;
 
   User({
     required this.id,
+    required this.planId,
     required this.name,
-    required this.username,
     required this.email,
-    required this.password,
-    required this.birthday,
-    this.picture,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.bio,
+    this.avatarUrl,
+    required this.userStatus,
   });
 
-  int get age => calculateAge(birthday);
-
-  bool get isAdult => age >= Constants.minUserAge;
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: (json['id'] as num).toInt(),
+      planId: (json['planId'] as num?)?.toInt() ?? 0,
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : DateTime.now(),
+      bio: json['bio'] as String? ?? '',
+      avatarUrl: json['avatarUrl'] as String? ?? '',
+      userStatus: json['userStatus'] as String? ?? 'NotVerified',
+    );
+  }
 
   String get initials => name
       .trim()
@@ -31,18 +47,5 @@ class User {
       .map((s) => s[0].toUpperCase())
       .join();
 
-  static bool isAdultCheck(DateTime birthday) {
-    return calculateAge(birthday) >= Constants.minUserAge;
-  }
-
-  static int calculateAge(DateTime birthday) {
-    final DateTime now = DateTime.now();
-    int age = now.year - birthday.year;
-
-    final bool isBirthday =
-        (now.month < birthday.month ||
-        (now.month == birthday.month && now.day < birthday.day));
-
-    return isBirthday ? age - 1 : age;
-  }
+  bool get isVerified => userStatus == 'Verified' || userStatus == 'Active';
 }

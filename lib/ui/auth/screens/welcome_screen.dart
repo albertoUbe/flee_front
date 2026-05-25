@@ -1,5 +1,5 @@
-import 'package:flee_front/ui/auth/screens/login_screen.dart';
-import 'package:flee_front/ui/auth/screens/register_screen.dart';
+import 'package:flee_front/ui/auth/screens/sign_in_screen.dart';
+import 'package:flee_front/ui/auth/screens/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -8,6 +8,8 @@ class WelcomeScreen extends StatelessWidget {
   static const msgTitle = "Discover The Flee World";
   static const msgSubtitle = "Create worlds that are destined to be fleeting";
   static const pathLogo = "assets/images/flee_logo_blue.png";
+  static const signIn = "Sign in";
+  static const signUp = "Sign up";
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +69,11 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const LoginScreen(),
+                            builder: (_) => const SignInScreen(),
                           ),
                         );
                       },
-                      child: const Text("Login"),
+                      child: const Text(signIn),
                     ),
                   ),
 
@@ -95,11 +97,11 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
+                            builder: (_) => const SignUpScreen(),
                           ),
                         );
                       },
-                      child: const Text("Sign up"),
+                      child: const Text(signUp),
                     ),
                   ),
                 ],

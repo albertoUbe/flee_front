@@ -1,41 +1,40 @@
 import 'package:flee_front/ui/auth/screens/home_screen.dart';
-import 'package:flee_front/ui/auth/screens/register_screen.dart';
-import 'package:flee_front/ui/auth/viewmodels/login_view_model.dart';
+import 'package:flee_front/ui/auth/screens/sign_up_screen.dart';
+import 'package:flee_front/ui/auth/viewmodels/sign_in_view_model.dart';
 import 'package:flee_front/ui/auth/widgets/auth_button_widget.dart';
 import 'package:flee_front/ui/auth/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   static const msgWelcomeBack = "Welcome back - you were never fleeting!";
   static const msgLogIn = "Log in";
   static const msgNewAccount = "Create new account";
   static const msgThisAccount = "Or continue with";
-
   static const textLogin = "Login";
-  static const textUser = "Username/email";
+  static const textEmail = "Email";
   static const textPassword = "Password";
 
-  final identifierController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
   void dispose() {
-    identifierController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<LoginViewModel>();
+    final model = context.watch<SignInViewModel>();
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0F1F),
@@ -65,8 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 40),
 
                   TextFieldWidget(
-                    controller: identifierController,
-                    label: textUser,
+                    controller: emailController,
+                    label: textEmail,
                     labelColor: const Color(0xFF42A5F5),
                     borderColor: const Color(0xFF42A5F5),
                     fillColor: const Color(0xFF1A1F2E),
@@ -102,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       loaderColor: Colors.white,
                       onPressed: () async {
                         await model.login(
-                          identifierController.text.trim(),
+                          emailController.text.trim(),
                           passwordController.text.trim(),
                         );
                         if (!mounted) return;
@@ -110,12 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => HomeScreen(
-                                emailOrUser: identifierController.text.trim(),
-                              ),
+                              builder: (_) => HomeScreen(user: model.user!),
                             ),
-                            (route) =>
-                                false, // Esto limpia el historial para que no pueda volver atrás al login
+                            (route) => false,
                           );
                         }
                       },
@@ -128,9 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const SignUpScreen()),
                       );
                     },
                     child: const Text(

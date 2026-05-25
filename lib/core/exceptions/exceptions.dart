@@ -13,10 +13,6 @@ class WeakPasswordFailure extends Exceptions {
   WeakPasswordFailure() : super(Constants.errorWeakPassword);
 }
 
-class UnderageFailure extends Exceptions {
-  UnderageFailure() : super(Constants.errorUnderage);
-}
-
 class ServerFailure extends Exceptions {
   ServerFailure([String? message]) : super(message ?? Constants.errorServer);
 }

@@ -38,6 +38,9 @@ dependencies:
   # Porvider
   provider: ^6.1.2
 
+  # HTTP client call backend
+  http: ^1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

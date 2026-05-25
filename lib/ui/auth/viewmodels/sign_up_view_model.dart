@@ -1,12 +1,11 @@
 import 'package:flee_front/core/exceptions/exceptions.dart';
 import 'package:flee_front/domain/entities/user.dart';
-import 'package:flee_front/domain/use_cases/register_use_case.dart';
+import 'package:flee_front/domain/use_cases/authentication/sign_up_use_case.dart';
 import 'package:flutter/foundation.dart';
 
-class RegisterViewModel extends ChangeNotifier {
-  final RegisterUseCase registerUseCase;
-
-  RegisterViewModel(this.registerUseCase);
+class SignUpViewModel extends ChangeNotifier {
+  final SignUpUseCase signUpUseCase;
+  SignUpViewModel(this.signUpUseCase);
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -19,22 +18,20 @@ class RegisterViewModel extends ChangeNotifier {
 
   Future<void> signUp({
     required String name,
-    required String username,
     required String email,
     required String password,
-    required DateTime? birthday,
+    required String confirmPassword,
   }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _user = await registerUseCase(
+      _user = await signUpUseCase(
         name: name,
-        username: username,
         email: email,
         password: password,
-        birthday: birthday,
+        confirmPassword: confirmPassword,
       );
     } on Exceptions catch (e) {
       _errorMessage = e.message;

@@ -1,12 +1,11 @@
 import 'package:flee_front/core/exceptions/exceptions.dart';
 import 'package:flee_front/domain/entities/user.dart';
-import 'package:flee_front/domain/use_cases/login_use_case.dart';
+import 'package:flee_front/domain/use_cases/authentication/sign_in_use_case.dart';
 import 'package:flutter/foundation.dart';
 
-class LoginViewModel extends ChangeNotifier {
-  final LoginUseCase loginUseCase;
-
-  LoginViewModel(this.loginUseCase);
+class SignInViewModel extends ChangeNotifier {
+  final SignInUseCase signInUseCase;
+  SignInViewModel(this.signInUseCase);
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -17,13 +16,13 @@ class LoginViewModel extends ChangeNotifier {
   User? _user;
   User? get user => _user;
 
-  Future<void> login(String emailOrUser, String password) async {
+  Future<void> login(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _user = await loginUseCase(emailOrUser, password);
+      _user = await signInUseCase(email, password);
     } on Exceptions catch (e) {
       _errorMessage = e.message;
     } finally {

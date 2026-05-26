@@ -79,21 +79,17 @@ class SidebarWidget extends StatelessWidget {
 
           const Spacer(),
 
-          // PERFIL INFERIOR CON MENÚ DESPLEGABLE
           Theme(
-            // Esto es para que el menú tenga el fondo oscuro
             data: Theme.of(
               context,
             ).copyWith(cardColor: const Color(0xFF1A1F2E)),
             child: PopupMenuButton<String>(
-              // El offset mueve el menú hacia ARRIBA (valor negativo en Y)
               offset: const Offset(0, -60),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               onSelected: (value) {
                 if (value == 'logout') {
-                  // Volver al login borrando el historial de navegación
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/login',
@@ -113,7 +109,6 @@ class SidebarWidget extends StatelessWidget {
                   ),
                 ),
               ],
-              // El "child" es el diseño de tu botón de perfil actual
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(

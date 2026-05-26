@@ -19,7 +19,7 @@ class TextFieldWidget extends StatelessWidget {
 
     this.labelColor = const Color(0xFF23B7FC),
     this.borderColor = const Color(0xFF23B7FC),
-    this.fillColor = const Color(0xFF1A1F2E), // azul oscuro elegante
+    this.fillColor = const Color(0xFF1A1F2E),
   });
 
   @override

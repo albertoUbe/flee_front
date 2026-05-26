@@ -1,5 +1,5 @@
 class Constants {
-  static const String baseUrl = "http://10.0.2.2:5076/api";
+  static const String baseUrl = "http://localhost:5076/api";
 
   static const int minPasswordLength = 8;
 

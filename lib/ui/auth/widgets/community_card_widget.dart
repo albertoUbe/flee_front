@@ -23,7 +23,6 @@ class CommunityCardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // Eliminamos el ancho fijo para que el GridView lo maneje
         decoration: BoxDecoration(
           color: const Color(0xFF1A2433),
           borderRadius: BorderRadius.circular(16),
@@ -31,7 +30,6 @@ class CommunityCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. IMAGEN CON ICONO SUPERPUESTO
             Stack(
               children: [
                 ClipRRect(
@@ -40,8 +38,7 @@ class CommunityCardWidget extends StatelessWidget {
                   ),
                   child: Image.network(
                     imagePath,
-                    height:
-                        100, // Bajamos a 100 para ganar esos 10-13px de margen
+                    height: 100,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     // Evita el error statusCode: 0 mostrando un placeholder
@@ -75,7 +72,6 @@ class CommunityCardWidget extends StatelessWidget {
               ],
             ),
 
-            // 2. CONTENIDO (Flexible para evitar overflow)
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -84,16 +80,14 @@ class CommunityCardWidget extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween, // Distribuye el espacio
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Título y tiempo
                     Text(
                       "$title - $timeLeft",
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize:
-                            13, // Reducimos un punto para asegurar espacio
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 1,
@@ -184,7 +178,6 @@ class CommunityCardWidget extends StatelessWidget {
           radius: 10,
           backgroundImage: NetworkImage(url),
           backgroundColor: Colors.grey[900],
-          // Manejo de error individual para cada avatar
           onBackgroundImageError: (exception, stackTrace) => {},
         ),
       ),

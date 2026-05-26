@@ -2,6 +2,7 @@ import 'package:flee_front/domain/entities/community.dart';
 import 'package:flee_front/domain/entities/user.dart';
 import 'package:flee_front/ui/auth/viewmodels/community_view_model.dart';
 import 'package:flee_front/ui/auth/widgets/community_card_widget.dart';
+import 'package:flee_front/ui/auth/widgets/floating_button_community_widget.dart';
 import 'package:flee_front/ui/auth/widgets/side_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -56,6 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )
               : null,
+
+          floatingActionButton: FloatingButtonCommunity(
+            creatorId: widget.user.id,
+          ),
+
           body: Row(
             children: [
               if (!isSmallScreen) SidebarWidget(emailOrUser: widget.user.email),

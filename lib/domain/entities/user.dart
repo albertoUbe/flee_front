@@ -34,7 +34,7 @@ class User {
           ? DateTime.parse(json['updatedAt'] as String)
           : DateTime.now(),
       bio: json['bio'] as String? ?? '',
-      avatarUrl: json['avatarUrl'] as String? ?? '',
+      avatarUrl: json['avatarUrl'] as String?,
       userStatus: json['userStatus'] as String? ?? 'NotVerified',
     );
   }

@@ -16,6 +16,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isLoading = false;
   bool _sent = false;
 
+  static const pathLogo = "assets/images/flee_logo_blue.png";
+
   @override
   void dispose() {
     _emailCtrl.dispose();
@@ -51,19 +53,48 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0F1F),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Color(0xFF9BB4D1)),
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: _sent ? _buildSuccess() : _buildForm(),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0.0, -0.2),
+            radius: 1.3,
+            colors: [Color(0xFF131C35), Color(0xFF040712)],
+            stops: [0.0, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0A0F1F),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.06),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: _sent ? _buildSuccess() : _buildForm(),
+                ),
+              ),
             ),
           ),
         ),
@@ -75,12 +106,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 200,
+            child: Image.asset(pathLogo, fit: BoxFit.contain),
+          ),
+          const SizedBox(height: 12),
           const Text(
             'Recuperar contraseña',
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -89,7 +128,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const Text(
             'Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 16),
+            style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 15),
           ),
           const SizedBox(height: 32),
           TextFormField(
@@ -113,7 +152,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
           FilledButton(
             onPressed: _isLoading ? null : _submit,
             style: FilledButton.styleFrom(
@@ -122,6 +161,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
+              minimumSize: const Size(double.infinity, 48),
             ),
             child: _isLoading
                 ? const SizedBox(
@@ -137,6 +177,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
           ),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -144,8 +185,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Widget _buildSuccess() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        const SizedBox(height: 16),
         const Icon(
           Icons.mark_email_read_outlined,
           size: 80,
@@ -156,15 +199,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           'Email enviado',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 26,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         const Text(
           'Si el email está registrado, recibirás un enlace para restablecer tu contraseña.',
-          style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 16),
+          style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 15),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
@@ -176,12 +219,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
+            minimumSize: const Size(double.infinity, 48),
           ),
           child: const Text(
             'Volver al inicio de sesión',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }

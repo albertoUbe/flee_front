@@ -170,8 +170,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           validator: (v) {
-                            if (v == null || v.isEmpty)
+                            if (v == null || v.isEmpty) {
                               return 'Introduce tu email';
+                            }
                             if (!v.contains('@')) return 'Email no válido';
                             return null;
                           },
@@ -264,10 +265,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            minimumSize: const Size(
-                              double.infinity,
-                              48,
-                            ), // Hace el botón consistente
+                            minimumSize: const Size(0, 48),
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
                           ),
                           child: auth.isLoading
                               ? const SizedBox(

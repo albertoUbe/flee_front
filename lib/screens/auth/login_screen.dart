@@ -73,9 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(
-                          alpha: 0.5,
-                        ), // Sombra suave para dar volumen
+                        color: Colors.black.withValues(alpha: 0.5),
                         blurRadius: 24,
                         offset: const Offset(0, 12),
                       ),
@@ -199,6 +197,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
+                            // CAMBIO EN ESTAS DOS LÍNEAS:
+                            minimumSize: const Size(0, 48),
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
                           ),
                           child: auth.isLoading
                               ? const SizedBox(

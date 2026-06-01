@@ -161,7 +161,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              minimumSize: const Size(double.infinity, 48),
+              minimumSize: const Size(0, 48),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
             ),
             child: _isLoading
                 ? const SizedBox(
@@ -219,7 +220,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            minimumSize: const Size(double.infinity, 48),
+            minimumSize: const Size(0, 48),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
           ),
           child: const Text(
             'Volver al inicio de sesión',

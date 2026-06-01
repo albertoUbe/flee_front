@@ -51,11 +51,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recuperar contraseña')),
+      backgroundColor: const Color(0xFF0A0F1F),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Color(0xFF9BB4D1)),
+      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          child: _sent ? _buildSuccess() : _buildForm(),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: _sent ? _buildSuccess() : _buildForm(),
+            ),
+          ),
         ),
       ),
     );
@@ -65,19 +75,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.',
-            style: Theme.of(context).textTheme.bodyMedium,
+          const Text(
+            'Recuperar contraseña',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+          const Text(
+            'Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 16),
+          ),
+          const SizedBox(height: 32),
           TextFormField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.white),
             decoration: const InputDecoration(
               labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
+              labelStyle: TextStyle(color: Color(0xFF9BB4D1)),
+              prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF9BB4D1)),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF9BB4D1)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF42A5F5)),
+              ),
             ),
             validator: (v) {
               if (v == null || v.isEmpty) return 'Introduce tu email';
@@ -86,18 +114,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             },
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: _isLoading ? null : _submit,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Enviar enlace'),
+          FilledButton(
+            onPressed: _isLoading ? null : _submit,
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF1E88E5),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Enviar enlace',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
           ),
         ],
       ),
@@ -108,23 +146,41 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.mark_email_read_outlined, size: 80, color: Colors.green),
+        const Icon(
+          Icons.mark_email_read_outlined,
+          size: 80,
+          color: Color(0xFF42A5F5),
+        ),
         const SizedBox(height: 24),
-        Text(
+        const Text(
           'Email enviado',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
-        Text(
+        const Text(
           'Si el email está registrado, recibirás un enlace para restablecer tu contraseña.',
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 16),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
         FilledButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Volver al inicio de sesión'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF1E88E5),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+          child: const Text(
+            'Volver al inicio de sesión',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       ],
     );

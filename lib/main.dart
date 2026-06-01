@@ -31,9 +31,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => PostProvider(PostService(), UserService()),
         ),
-        ChangeNotifierProvider(
-          create: (_) => PlanProvider(PlanService()),
-        ),
+        ChangeNotifierProvider(create: (_) => PlanProvider(PlanService())),
       ],
       child: const FleeApp(),
     ),

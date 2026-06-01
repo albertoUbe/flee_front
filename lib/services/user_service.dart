@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import '../core/constants/api_constants.dart';
 import '../models/user_model.dart';
 import 'api_client.dart';
@@ -37,12 +38,16 @@ class UserService {
   Future<UserModel> editProfile(
     int id,
     String name,
-    String bio,
-    String avatarUrl,
-  ) async {
-    final data = await ApiClient.put(
+    String bio, {
+    Uint8List? imageBytes,
+    String? imageFileName,
+  }) async {
+    final data = await ApiClient.putMultipart(
       ApiConstants.editProfile(id),
-      {'name': name, 'bio': bio, 'avatarUrl': avatarUrl},
+      {'name': name, 'bio': bio},
+      fileBytes: imageBytes,
+      fileName: imageFileName,
+      fileField: imageBytes != null ? 'file' : null,
     );
     return UserModel.fromJson(data as Map<String, dynamic>);
   }

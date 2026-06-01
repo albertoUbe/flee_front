@@ -75,14 +75,20 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> editProfile(String name, String bio, String avatarUrl) async {
+  Future<bool> editProfile(
+    String name,
+    String bio, {
+    Uint8List? imageBytes,
+    String? imageFileName,
+  }) async {
     _setLoading(true);
     try {
       final updated = await _userService.editProfile(
         _currentUser!.id,
         name,
         bio,
-        avatarUrl,
+        imageBytes: imageBytes,
+        imageFileName: imageFileName,
       );
       _currentUser = updated;
       await _persist(updated);

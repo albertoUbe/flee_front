@@ -1,4 +1,3 @@
-import 'package:flee_front/screens/communities/communities_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,7 +41,7 @@ Future<void> main() async {
 class FleeApp extends StatelessWidget {
   const FleeApp({super.key});
 
-  /*@override
+  @override
   Widget build(BuildContext context) {
     final isLoggedIn = context.watch<AuthProvider>().isLoggedIn;
     return MaterialApp(
@@ -50,20 +49,6 @@ class FleeApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       home: isLoggedIn ? const MainShell() : const LoginScreen(),
-    );
-  }*/
-
-  @override
-  Widget build(BuildContext context) {
-    // Comentamos temporalmente la verificación del login
-    // final isLoggedIn = context.watch<AuthProvider>().isLoggedIn;
-
-    return MaterialApp(
-      title: 'Flee',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      // Forzamos a que pinte tu pantalla directamente:
-      home: const MainShell(),
     );
   }
 }

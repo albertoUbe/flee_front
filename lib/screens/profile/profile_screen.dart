@@ -15,6 +15,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // Paleta de colores unificada y compartida de Flee
+  static const Color bgDark = Color(0xFF0A0F1F);
+  static const Color textMuted = Color(0xFF9BB4D1);
+  static const Color accentBlue = Color(0xFF42A5F5);
+  static const Color buttonBlue = Color(0xFF1E88E5);
+  static const Color gradientStart = Color(0xFF131C35);
+  static const Color gradientEnd = Color(0xFF040712);
+
   @override
   void initState() {
     super.initState();
@@ -32,125 +40,277 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (user == null) return const SizedBox.shrink();
 
     final currentPlan = planProvider.planById(user.planId);
-    final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isDesktop = constraints.maxWidth > 600;
+
+        return Scaffold(
+          backgroundColor: bgDark,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: const IconThemeData(color: Colors.white),
+            title: const Text(
+              'Perfil',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, color: textMuted),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          Container(
-            color: colorScheme.surfaceContainerLowest,
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                UserAvatar(avatarUrl: user.avatarUrl, radius: 48),
-                const SizedBox(height: 12),
-                Text(
-                  user.name,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+          extendBodyBehindAppBar: true,
+          body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: isDesktop
+                ? const BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(0.0, -0.2),
+                      radius: 1.3,
+                      colors: [gradientStart, gradientEnd],
+                      stops: [0.0, 1.0],
+                    ),
+                  )
+                : const BoxDecoration(color: bgDark),
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Container(
+                      // Mismo padding interno que la tarjeta de comunidad
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: bgDark.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.06),
+                        ),
                       ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  user.email,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: colorScheme.onSurfaceVariant),
-                ),
-                if (user.bio.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    user.bio,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 1. Cabecera del Perfil (Avatar + Info Principal) Centrada
+                          Center(
+                            child: Column(
+                              children: [
+                                UserAvatar(
+                                  avatarUrl: user.avatarUrl,
+                                  radius: 48,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  user.name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  user.email,
+                                  style: const TextStyle(
+                                    color: textMuted,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                if (user.bio.isNotEmpty) ...[
+                                  const SizedBox(height: 14),
+                                  Text(
+                                    user.bio,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 14,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                                const SizedBox(height: 14),
+                                _StatusChip(status: user.userStatus),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+
+                          // 2. Sección: Cuenta y Suscripción
+                          const Padding(
+                            padding: EdgeInsets.only(left: 4, bottom: 8),
+                            child: Text(
+                              'CUENTA Y SUSCRIPCIÓN',
+                              style: TextStyle(
+                                color: textMuted,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          _buildTile(
+                            icon: Icons.workspace_premium_outlined,
+                            title: 'Plan actual',
+                            subtitle: currentPlan?.name ?? 'Cargando...',
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: textMuted,
+                            ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PlansScreen(),
+                              ),
+                            ),
+                          ),
+                          _buildTile(
+                            icon: Icons.calendar_today_outlined,
+                            title: 'Miembro desde',
+                            subtitle: DateFormatter.formatDate(user.createdAt),
+                          ),
+                          _buildTile(
+                            icon: Icons.star_border_outlined,
+                            title: 'Planes de suscripción',
+                            subtitle: 'Explora opciones premium',
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: textMuted,
+                            ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PlansScreen(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // 3. Sección: Zona de Peligro
+                          const Padding(
+                            padding: EdgeInsets.only(left: 4, bottom: 8),
+                            child: Text(
+                              'ZONA DE SEGURIDAD',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          _buildTile(
+                            icon: Icons.logout,
+                            title: 'Cerrar sesión',
+                            titleColor: Colors.orangeAccent,
+                            iconColor: Colors.orangeAccent,
+                            onTap: _signOut,
+                          ),
+                          _buildTile(
+                            icon: Icons.delete_forever_outlined,
+                            title: 'Eliminar cuenta',
+                            titleColor: Colors.redAccent,
+                            iconColor: Colors.redAccent,
+                            onTap: _deleteAccount,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-                const SizedBox(height: 12),
-                _StatusChip(status: user.userStatus),
-              ],
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.workspace_premium_outlined),
-            title: const Text('Plan actual'),
-            subtitle: Text(currentPlan?.name ?? 'Cargando...'),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PlansScreen()),
-            ),
+        );
+      },
+    );
+  }
+
+  /// Elemento de lista estilizado para encajar perfectamente de forma nativa en la Card
+  Widget _buildTile({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
+    Color titleColor = Colors.white,
+    Color iconColor = textMuted,
+    VoidCallback? onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(
+          0xFF0F172A,
+        ).withValues(alpha: 0.4), // Integración sutil dentro de la Card
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.02)),
+      ),
+      child: ListTile(
+        onTap: onTap,
+        dense: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        leading: Icon(icon, color: iconColor, size: 20),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: titleColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
-          ListTile(
-            leading: const Icon(Icons.calendar_today_outlined),
-            title: const Text('Miembro desde'),
-            subtitle: Text(DateFormatter.formatDate(user.createdAt)),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.edit_outlined),
-            title: const Text('Editar perfil'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.star_outline),
-            title: const Text('Planes de suscripción'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PlansScreen()),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.orange),
-            title:
-                const Text('Cerrar sesión', style: TextStyle(color: Colors.orange)),
-            onTap: _signOut,
-          ),
-          ListTile(
-            leading: const Icon(Icons.delete_forever_outlined, color: Colors.red),
-            title: const Text('Eliminar cuenta',
-                style: TextStyle(color: Colors.red)),
-            onTap: _deleteAccount,
-          ),
-          const SizedBox(height: 24),
-        ],
+        ),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle,
+                style: const TextStyle(color: textMuted, fontSize: 12),
+              )
+            : null,
+        trailing: trailing,
       ),
     );
+  }
+
+  ThemeData _dialogTheme(BuildContext context) {
+    return Theme.of(
+      context,
+    ).copyWith(dialogBackgroundColor: bgDark, scaffoldBackgroundColor: bgDark);
   }
 
   Future<void> _signOut() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Seguro que quieres cerrar sesión?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+      builder: (ctx) => Theme(
+        data: _dialogTheme(context),
+        child: AlertDialog(
+          title: const Text(
+            'Cerrar sesión',
+            style: TextStyle(color: Colors.white),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Cerrar sesión'),
+          content: const Text(
+            '¿Seguro que quieres cerrar sesión de tu cuenta?',
+            style: TextStyle(color: textMuted),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(backgroundColor: buttonBlue),
+              child: const Text('Cerrar sesión'),
+            ),
+          ],
+        ),
       ),
     );
     if (confirm == true && mounted) {
@@ -161,21 +321,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _deleteAccount() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar cuenta'),
-        content: const Text(
-            'Esta acción es permanente. Se eliminarán todos tus datos. ¿Continuar?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+      builder: (ctx) => Theme(
+        data: _dialogTheme(context),
+        child: AlertDialog(
+          title: const Text(
+            'Eliminar cuenta',
+            style: TextStyle(color: Colors.white),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar cuenta'),
+          content: const Text(
+            'Esta acción es permanente y destructiva. Se eliminarán todos tus datos de inmediato. ¿Continuar?',
+            style: TextStyle(color: textMuted),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+              child: const Text('Eliminar definitivamente'),
+            ),
+          ],
+        ),
       ),
     );
     if (confirm == true && mounted) {
@@ -186,7 +354,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class _StatusChip extends StatelessWidget {
   final String status;
-
   const _StatusChip({required this.status});
 
   @override
@@ -195,26 +362,36 @@ class _StatusChip extends StatelessWidget {
     String label;
     switch (status) {
       case 'Active':
-        color = Colors.green;
+        color = const Color(0xFF4CAF50);
         label = 'Activo';
         break;
       case 'NotVerified':
-        color = Colors.orange;
+        color = const Color(0xFFFF9800);
         label = 'Pendiente de verificación';
         break;
       case 'Banned':
-        color = Colors.red;
+        color = const Color(0xFFEF5350);
         label = 'Suspendido';
         break;
       default:
         color = Colors.grey;
         label = status;
     }
-    return Chip(
-      label: Text(label, style: const TextStyle(fontSize: 12)),
-      backgroundColor: color.withValues(alpha: 0.15),
-      side: BorderSide(color: color),
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

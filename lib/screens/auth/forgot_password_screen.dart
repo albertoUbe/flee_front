@@ -59,45 +59,63 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Color(0xFF9BB4D1)),
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.2),
-            radius: 1.3,
-            colors: [Color(0xFF131C35), Color(0xFF040712)],
-            stops: [0.0, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0A0F1F),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.06),
+      // LayoutBuilder para manejar el diseño adaptativo
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Identificamos si es Escritorio o pantalla grande si supera los 600px
+          final bool isDesktop = constraints.maxWidth > 600;
+
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            // Aplicamos el gradiente radial solo en escritorio. En móvil usamos fondo plano.
+            decoration: isDesktop
+                ? const BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(0.0, -0.2),
+                      radius: 1.3,
+                      colors: [Color(0xFF131C35), Color(0xFF040712)],
+                      stops: [0.0, 1.0],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        blurRadius: 24,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
+                  )
+                : const BoxDecoration(color: Color(0xFF0A0F1F)),
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 16,
                   ),
-                  child: _sent ? _buildSuccess() : _buildForm(),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      // El contenedor interno se estiliza como tarjeta solo en Escritorio.
+                      // En móvil se vuelve transparente y sin bordes ni sombras.
+                      decoration: isDesktop
+                          ? BoxDecoration(
+                              color: const Color(0xFF0A0F1F),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.06),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.5),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 12),
+                                ),
+                              ],
+                            )
+                          : const BoxDecoration(),
+                      child: _sent ? _buildSuccess() : _buildForm(),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

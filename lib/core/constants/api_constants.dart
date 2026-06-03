@@ -20,8 +20,7 @@ class ApiConstants {
   static String allUsers() => '$baseUrl/api/user';
   static String usersByCommunity(int communityId) =>
       '$baseUrl/api/user/community/$communityId';
-  static String usersByVotes(int postId) =>
-      '$baseUrl/api/user/votes/$postId';
+  static String usersByVotes(int postId) => '$baseUrl/api/user/votes/$postId';
   static String deleteUser(int id) => '$baseUrl/api/user/$id';
   static String forgotPassword() => '$baseUrl/api/user/forgot-password';
   static String resetPassword() => '$baseUrl/api/user/reset-password';

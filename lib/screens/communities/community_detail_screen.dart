@@ -23,13 +23,13 @@ class CommunityDetailScreen extends StatefulWidget {
 class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   late CommunityModel _community;
 
-  // Paleta de colores unificada y compartida de Flee
   static const Color bgDark = Color(0xFF0A0F1F);
   static const Color textMuted = Color(0xFF9BB4D1);
   static const Color accentBlue = Color(0xFF42A5F5);
   static const Color buttonBlue = Color(0xFF1E88E5);
   static const Color gradientStart = Color(0xFF131C35);
   static const Color gradientEnd = Color(0xFF040712);
+  static const Color dialogBg = Color(0xFF131C35);
 
   @override
   void initState() {
@@ -40,11 +40,10 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     });
   }
 
-  ThemeData _dialogTheme(BuildContext context) {
-    return Theme.of(
-      context,
-    ).copyWith(dialogBackgroundColor: bgDark, scaffoldBackgroundColor: bgDark);
-  }
+  ShapeBorder get _dialogShape => RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(20),
+    side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +102,7 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
               if (isCreator)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
-                  color: const Color(0xFF131C35),
+                  color: dialogBg,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -147,12 +146,9 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
             child: SafeArea(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 50, 16, 50),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
+                    constraints: const BoxConstraints(maxWidth: 600),
                     child: Container(
                       decoration: BoxDecoration(
                         color: bgDark.withValues(alpha: 0.6),
@@ -332,29 +328,28 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   Future<void> _deletePost(int postId) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => Theme(
-        data: _dialogTheme(context),
-        child: AlertDialog(
-          title: const Text(
-            'Eliminar post',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: const Text(
-            '¿Eliminar este post definitivamente?',
-            style: TextStyle(color: textMuted),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar', style: TextStyle(color: textMuted)),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
-              child: const Text('Eliminar'),
-            ),
-          ],
+      builder: (ctx) => AlertDialog(
+        backgroundColor: dialogBg,
+        shape: _dialogShape,
+        title: const Text(
+          'Eliminar post',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        content: const Text(
+          '¿Eliminar este post definitivamente?',
+          style: TextStyle(color: textMuted),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Eliminar'),
+          ),
+        ],
       ),
     );
     if (confirm == true && mounted) {
@@ -375,29 +370,28 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   Future<void> _deleteCommunity() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => Theme(
-        data: _dialogTheme(context),
-        child: AlertDialog(
-          title: const Text(
-            'Eliminar comunidad',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: const Text(
-            'Esta acción es irreversible. ¿Eliminar la comunidad y todos sus posts?',
-            style: TextStyle(color: textMuted),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar', style: TextStyle(color: textMuted)),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
-              child: const Text('Eliminar'),
-            ),
-          ],
+      builder: (ctx) => AlertDialog(
+        backgroundColor: dialogBg,
+        shape: _dialogShape,
+        title: const Text(
+          'Eliminar comunidad',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        content: const Text(
+          'Esta acción es irreversible. ¿Eliminar la comunidad y todos sus posts?',
+          style: TextStyle(color: textMuted),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Eliminar definitivamente'),
+          ),
+        ],
       ),
     );
     if (confirm == true && mounted) {

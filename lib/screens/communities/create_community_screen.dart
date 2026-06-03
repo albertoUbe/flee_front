@@ -135,10 +135,12 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                 icon: Icons.group_outlined,
                               ),
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty)
+                                if (v == null || v.trim().isEmpty) {
                                   return 'El nombre es obligatorio';
-                                if (v.trim().length < 3)
+                                }
+                                if (v.trim().length < 3) {
                                   return 'Mínimo 3 caracteres';
+                                }
                                 return null;
                               },
                             ),

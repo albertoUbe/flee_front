@@ -19,7 +19,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // Paleta de colores unificada de Flee
   static const Color bgDark = Color(0xFF0A0F1F);
   static const Color textMuted = Color(0xFF9BB4D1);
   static const Color accentBlue = Color(0xFF42A5F5);
@@ -57,14 +56,11 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
         final bool isDesktop = constraints.maxWidth > 600;
 
         return Scaffold(
-          backgroundColor:
-              Colors.transparent, // Deja ver el fondo del MainShell
-          // El AppBar solo se renderiza si es Desktop. En móvil lo maneja el MainShell.
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            automaticallyImplyLeading:
-                false, // Evita flechas de volver innecesarias
+            automaticallyImplyLeading: false,
             title: isDesktop
                 ? const Text(
                     'Comunidades',
@@ -74,7 +70,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
                     ),
                   )
                 : null,
-            // Ponemos el TabBar en el bottom del AppBar si es Escritorio, o directamente como cabecera.
             bottom: TabBar(
               controller: _tabController,
               indicatorColor: accentBlue,
@@ -87,7 +82,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
               ],
             ),
           ),
-
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: isDesktop ? 24 : 0),
             child: communities.isLoading
@@ -104,8 +98,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
                     ],
                   ),
           ),
-
-          // Botón flotante estilizado con el azul del botón de Login
           floatingActionButton: FloatingActionButton.extended(
             backgroundColor: buttonBlue,
             foregroundColor: Colors.white,
@@ -144,7 +136,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.group_outlined, size: 64, color: textMuted),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Aún no sigues ninguna comunidad',
               style: TextStyle(color: textMuted, fontSize: 16),
@@ -184,7 +176,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
     );
   }
 
-  /// Helper que decide si renderiza una lista simple (Móvil) o una cuadrícula/Grid (Escritorio)
   Widget _buildResponsiveGrid(
     List<CommunityModel> list,
     int? userId,
@@ -193,22 +184,22 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
     Set<int>? myIds,
   ]) {
     if (isDesktop) {
-      // En escritorio las tarjetas se ven mejor distribuidas en columnas (Grid)
-      return GridView.builder(
+      return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        itemCount: list.length,
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 400, // Ajusta el ancho máximo de cada tarjeta
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio:
-              2.8, // Ajusta según la altura interna de tus CommunityCard
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          children: list.map((community) {
+            return SizedBox(
+              width: 380,
+              height: 150,
+              child: _cardItem(community, userId, isMyList, myIds),
+            );
+          }).toList(),
         ),
-        itemBuilder: (_, i) => _cardItem(list[i], userId, isMyList, myIds),
       );
     }
 
-    // En móvil, se mantiene el ListView vertical estándar
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: list.length,
@@ -216,7 +207,6 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
     );
   }
 
-  /// Construye la tarjeta inyectando las propiedades necesarias
   Widget _cardItem(
     CommunityModel community,
     int? userId,

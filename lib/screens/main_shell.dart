@@ -1,6 +1,6 @@
 import 'package:flee_front/core/theme/theme_dark_light.dart';
 import 'package:flutter/material.dart';
-import '../main.dart'; // para acceder a themeNotifier
+import '../main.dart';
 import 'feed/feed_screen.dart';
 import 'communities/communities_screen.dart';
 import 'profile/profile_screen.dart';

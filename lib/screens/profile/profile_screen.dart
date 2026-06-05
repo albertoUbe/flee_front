@@ -15,7 +15,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Paleta de colores unificada y compartida de Flee
   static const Color bgDark = Color(0xFF0A0F1F);
   static const Color textMuted = Color(0xFF9BB4D1);
   static const Color accentBlue = Color(0xFF42A5F5);
@@ -45,63 +44,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, constraints) {
         final bool isDesktop = constraints.maxWidth > 600;
 
-        return Scaffold(
-          backgroundColor: bgDark,
-          appBar: AppBar(
+        return Container(
+          decoration: isDesktop
+              ? const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment(0.0, -0.2),
+                    radius: 1.3,
+                    colors: [gradientStart, gradientEnd],
+                    stops: [0.0, 1.0],
+                  ),
+                )
+              : const BoxDecoration(color: bgDark),
+          child: Scaffold(
             backgroundColor: Colors.transparent,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text(
-              'Perfil',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit_outlined, color: textMuted),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+              title: const Text(
+                'Perfil',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
-          extendBodyBehindAppBar: true,
-          body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: isDesktop
-                ? const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment(0.0, -0.2),
-                      radius: 1.3,
-                      colors: [gradientStart, gradientEnd],
-                      stops: [0.0, 1.0],
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, color: textMuted),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const EditProfileScreen(),
                     ),
-                  )
-                : const BoxDecoration(color: bgDark),
-            child: SafeArea(
+                  ),
+                ),
+              ],
+            ),
+            body: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: Container(
-                      // Mismo padding interno que la tarjeta de comunidad
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: bgDark.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.06),
-                        ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 24,
                       ),
+                      decoration: isDesktop
+                          ? BoxDecoration(
+                              color: bgDark.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.06),
+                              ),
+                            )
+                          : const BoxDecoration(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // 1. Cabecera del Perfil (Avatar + Info Principal) Centrada
                           Center(
                             child: Column(
                               children: [
@@ -143,8 +147,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 32),
-
-                          // 2. Sección: Cuenta y Suscripción
                           const Padding(
                             padding: EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
@@ -195,8 +197,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-
-                          // 3. Sección: Zona de Peligro
                           const Padding(
                             padding: EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
@@ -236,7 +236,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  /// Elemento de lista estilizado para encajar perfectamente de forma nativa en la Card
   Widget _buildTile({
     required IconData icon,
     required String title,
@@ -249,9 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(
-          0xFF0F172A,
-        ).withValues(alpha: 0.4), // Integración sutil dentro de la Card
+        color: const Color(0xFF0F172A).withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.white.withValues(alpha: 0.02)),
       ),
@@ -280,10 +277,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   ThemeData _dialogTheme(BuildContext context) {
-    return Theme.of(
-      context,
-    ).copyWith(dialogBackgroundColor: bgDark, scaffoldBackgroundColor: bgDark);
+    return Theme.of(context).copyWith(
+      dialogTheme: const DialogThemeData(backgroundColor: bgDark, elevation: 0),
+    );
   }
+
+  ShapeBorder get _dialogShape => RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(20),
+    side: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1.0),
+  );
 
   Future<void> _signOut() async {
     final confirm = await showDialog<bool>(
@@ -291,23 +293,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => Theme(
         data: _dialogTheme(context),
         child: AlertDialog(
+          shape: _dialogShape,
           title: const Text(
             'Cerrar sesión',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
           content: const Text(
             '¿Seguro que quieres cerrar sesión de tu cuenta?',
-            style: TextStyle(color: textMuted),
+            style: TextStyle(color: textMuted, fontSize: 14),
+          ),
+          actionsPadding: const EdgeInsets.only(
+            bottom: 16,
+            right: 16,
+            left: 16,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+              style: TextButton.styleFrom(
+                foregroundColor: textMuted,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Cancelar'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: buttonBlue),
-              child: const Text('Cerrar sesión'),
+              style: FilledButton.styleFrom(
+                backgroundColor: buttonBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
+              child: const Text(
+                'Cerrar sesión',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -324,23 +354,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => Theme(
         data: _dialogTheme(context),
         child: AlertDialog(
+          shape: _dialogShape,
           title: const Text(
             'Eliminar cuenta',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
           content: const Text(
             'Esta acción es permanente y destructiva. Se eliminarán todos tus datos de inmediato. ¿Continuar?',
-            style: TextStyle(color: textMuted),
+            style: TextStyle(color: textMuted, fontSize: 14),
+          ),
+          actionsPadding: const EdgeInsets.only(
+            bottom: 16,
+            right: 16,
+            left: 16,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+              style: TextButton.styleFrom(
+                foregroundColor: textMuted,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Cancelar'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
-              child: const Text('Eliminar definitivamente'),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
+              child: const Text(
+                'Eliminar definitivamente',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),

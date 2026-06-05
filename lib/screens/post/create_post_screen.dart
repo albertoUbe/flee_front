@@ -91,76 +91,54 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       builder: (context, constraints) {
         final bool isDesktop = constraints.maxWidth > 600;
 
-        return Scaffold(
-          backgroundColor: bgDark,
-          appBar: AppBar(
+        return Container(
+          decoration: isDesktop
+              ? const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment(0.0, -0.2),
+                    radius: 1.3,
+                    colors: [gradientStart, gradientEnd],
+                    stops: [0.0, 1.0],
+                  ),
+                )
+              : const BoxDecoration(color: bgDark),
+          child: Scaffold(
             backgroundColor: Colors.transparent,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text(
-              'Nueva publicación',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton(
-                  onPressed: isLoading ? null : _submit,
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              accentBlue,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          'Publicar',
-                          style: TextStyle(
-                            color: accentBlue,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+              title: const Text(
+                'Nueva publicación',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
-          extendBodyBehindAppBar: true,
-          body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: isDesktop
-                ? const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment(0.0, -0.2),
-                      radius: 1.3,
-                      colors: [gradientStart, gradientEnd],
-                      stops: [0.0, 1.0],
-                    ),
-                  )
-                : const BoxDecoration(color: bgDark),
-            child: SafeArea(
+              // Se eliminaron las acciones (actions) que contenían el antiguo botón superior derecho
+            ),
+            body: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: bgDark.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.06),
-                        ),
-                      ),
+                      padding: isDesktop
+                          ? const EdgeInsets.all(32)
+                          : EdgeInsets.zero,
+                      decoration: isDesktop
+                          ? BoxDecoration(
+                              color: bgDark.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.06),
+                              ),
+                            )
+                          : const BoxDecoration(),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -294,6 +272,49 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 ),
                               ),
                             ],
+                            const SizedBox(height: 36),
+
+                            // Botón de Enviar (Ajustado exactamente a su contenido)
+                            Align(
+                              alignment: Alignment.center,
+                              child: FilledButton(
+                                onPressed: isLoading ? null : _submit,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: buttonBlue,
+                                  foregroundColor: Colors.white,
+                                  minimumSize: const Size(
+                                    0,
+                                    48,
+                                  ), // Ancho dinámico mínimo 0, altura táctil 48px
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal:
+                                        40, // Margen simétrico para envolver el texto cómodamente
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Publicar',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ),
+                            ),
                           ],
                         ),
                       ),

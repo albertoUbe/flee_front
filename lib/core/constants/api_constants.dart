@@ -2,13 +2,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 
 class ApiConstants {
-  static String get baseUrl {
-    if (kIsWeb) return 'http://localhost:5076';
-    try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:5000';
-    } catch (_) {}
-    return 'http://localhost:5076';
-  }
+  static const String _prodUrl = 'https://fleeback-production.up.railway.app';
+
+  static String get baseUrl => _prodUrl;
 
   static const String userPrefsKey = 'flee_current_user';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/user_service.dart';
 import '../../services/api_client.dart';
 
@@ -14,8 +15,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailCtrl = TextEditingController();
   final _service = UserService();
   bool _isLoading = false;
-  bool _sent = false;
 
+  static const _fleeUtilBase = 'https://flee-util.vercel.app';
   static const pathLogo = "assets/images/flee_logo_blue.png";
 
   @override
@@ -28,8 +29,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      await _service.forgotPassword(_emailCtrl.text.trim());
-      if (mounted) setState(() => _sent = true);
+      final token = await _service.forgotPassword(_emailCtrl.text.trim());
+      final url = Uri.parse('$_fleeUtilBase/reset-password?token=$token');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
+      if (mounted) Navigator.pop(context);
     } on ApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -59,16 +64,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Color(0xFF9BB4D1)),
       ),
-      // LayoutBuilder para manejar el diseño adaptativo
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Identificamos si es Escritorio o pantalla grande si supera los 600px
           final bool isDesktop = constraints.maxWidth > 600;
 
           return Container(
             width: double.infinity,
             height: double.infinity,
-            // Aplicamos el gradiente radial solo en escritorio. En móvil usamos fondo plano.
             decoration: isDesktop
                 ? const BoxDecoration(
                     gradient: RadialGradient(
@@ -90,8 +92,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     constraints: const BoxConstraints(maxWidth: 400),
                     child: Container(
                       padding: const EdgeInsets.all(24),
-                      // El contenedor interno se estiliza como tarjeta solo en Escritorio.
-                      // En móvil se vuelve transparente y sin bordes ni sombras.
                       decoration: isDesktop
                           ? BoxDecoration(
                               color: const Color(0xFF0A0F1F),
@@ -108,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ],
                             )
                           : const BoxDecoration(),
-                      child: _sent ? _buildSuccess() : _buildForm(),
+                      child: _buildForm(),
                     ),
                   ),
                 ),
@@ -144,7 +144,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.',
+            'Introduce tu email y accederás directamente a la página de restablecimiento.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 15),
           ),
@@ -192,62 +192,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   )
                 : const Text(
-                    'Enviar enlace',
+                    'Restablecer contraseña',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
           ),
           const SizedBox(height: 8),
         ],
       ),
-    );
-  }
-
-  Widget _buildSuccess() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(height: 16),
-        const Icon(
-          Icons.mark_email_read_outlined,
-          size: 80,
-          color: Color(0xFF42A5F5),
-        ),
-        const SizedBox(height: 24),
-        const Text(
-          'Email enviado',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Si el email está registrado, recibirás un enlace para restablecer tu contraseña.',
-          style: TextStyle(color: Color(0xFF9BB4D1), fontSize: 15),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
-        FilledButton(
-          onPressed: () => Navigator.pop(context),
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF1E88E5),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            minimumSize: const Size(0, 48),
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-          ),
-          child: const Text(
-            'Volver al inicio de sesión',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 8),
-      ],
     );
   }
 }

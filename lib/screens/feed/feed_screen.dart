@@ -20,7 +20,8 @@ class _FeedScreenState extends State<FeedScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PostProvider>().loadFeed();
+      final userId = context.read<AuthProvider>().currentUser?.id;
+      context.read<PostProvider>().loadFeed(userId: userId);
       context.read<CommunityProvider>().loadAllCommunities();
     });
   }
@@ -54,7 +55,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         Icons.refresh,
                         color: AppTheme.textSecondary(context),
                       ),
-                      onPressed: () => context.read<PostProvider>().loadFeed(),
+                      onPressed: () => context.read<PostProvider>().loadFeed(userId: currentUser?.id),
                     ),
                     const SizedBox(width: 16),
                   ],
@@ -67,7 +68,7 @@ class _FeedScreenState extends State<FeedScreen> {
               : RefreshIndicator(
                   color: AppTheme.accentBlue,
                   backgroundColor: AppTheme.scaffoldBg(context),
-                  onRefresh: () => context.read<PostProvider>().loadFeed(),
+                  onRefresh: () => context.read<PostProvider>().loadFeed(userId: currentUser?.id),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.symmetric(
@@ -179,7 +180,9 @@ class _FeedScreenState extends State<FeedScreen> {
     return RefreshIndicator(
       color: AppTheme.accentBlue,
       backgroundColor: AppTheme.scaffoldBg(context),
-      onRefresh: () => context.read<PostProvider>().loadFeed(),
+      onRefresh: () => context.read<PostProvider>().loadFeed(
+        userId: context.read<AuthProvider>().currentUser?.id,
+      ),
       child: ListView(
         children: [
           const SizedBox(height: 140),

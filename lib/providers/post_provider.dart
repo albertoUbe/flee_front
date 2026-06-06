@@ -30,10 +30,12 @@ class PostProvider extends ChangeNotifier {
 
   UserModel? authorOf(int userId) => _userCache[userId];
 
-  Future<void> loadFeed() async {
+  Future<void> loadFeed({int? userId}) async {
     _setLoading(true);
     try {
-      final posts = await _postService.getAllPosts();
+      final posts = userId != null
+          ? await _postService.getFeedByUser(userId)
+          : await _postService.getAllPosts();
       _feedPosts = posts..sort((a, b) => b.postDate.compareTo(a.postDate));
       await _cacheAuthors(posts);
       _errorMessage = null;

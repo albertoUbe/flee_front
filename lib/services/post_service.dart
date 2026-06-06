@@ -11,6 +11,13 @@ class PostService {
         .toList();
   }
 
+  Future<List<PostModel>> getFeedByUser(int userId) async {
+    final data = await ApiClient.get(ApiConstants.userFeed(userId));
+    return (data as List)
+        .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<List<PostModel>> getPostsByCommunity(int communityId) async {
     final data = await ApiClient.get(ApiConstants.postsByCommunity(communityId));
     return (data as List)

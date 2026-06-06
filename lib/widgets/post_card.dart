@@ -13,6 +13,7 @@ class PostCard extends StatelessWidget {
   final VoidCallback onVoteTap;
   final VoidCallback? onDeleteTap;
   final VoidCallback? onTap;
+  final String? communityName;
 
   const PostCard({
     super.key,
@@ -22,6 +23,7 @@ class PostCard extends StatelessWidget {
     required this.onVoteTap,
     this.onDeleteTap,
     this.onTap,
+    this.communityName,
   });
 
   @override
@@ -38,6 +40,30 @@ class PostCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Chip de comunidad
+            if (communityName != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.groups_outlined,
+                      size: 13,
+                      color: AppTheme.accentBlue,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      communityName!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.accentBlue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             // Cabecera: avatar + autor + fecha + borrar
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 8, 0),

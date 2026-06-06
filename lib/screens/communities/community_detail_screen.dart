@@ -10,6 +10,9 @@ import '../../widgets/post_card.dart';
 import '../../widgets/loading_indicator.dart';
 import '../post/create_post_screen.dart';
 import 'edit_community_screen.dart';
+import '../../models/user_model.dart';
+import '../../services/user_service.dart';
+import '../../widgets/user_avatar.dart';
 
 class CommunityDetailScreen extends StatefulWidget {
   final CommunityModel community;
@@ -24,6 +27,8 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   late CommunityModel _community;
   late ScrollController _scrollController;
   bool _headerExpanded = true;
+  List<UserModel> _members = [];
+  bool _membersLoading = false;
 
   @override
   void initState() {
@@ -31,6 +36,7 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     _community = widget.community;
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+    _loadMembers();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = context.read<AuthProvider>().currentUser?.id;
       context.read<PostProvider>().loadCommunityPosts(_community.id, userId: userId);
@@ -45,6 +51,18 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadMembers() async {
+    setState(() => _membersLoading = true);
+    try {
+      final members = await UserService().getUsersByCommunity(_community.id);
+      if (mounted) setState(() => _members = members);
+    } catch (_) {
+      // silent fail — member count is informational
+    } finally {
+      if (mounted) setState(() => _membersLoading = false);
+    }
   }
 
   void _onScroll() {
@@ -328,6 +346,48 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 8),
+                        InkWell(
+                          onTap: (!_membersLoading && _members.isNotEmpty)
+                              ? _showMembersList
+                              : null,
+                          borderRadius: BorderRadius.circular(6),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.group_outlined,
+                                size: 14,
+                                color: AppTheme.textSecondary(context),
+                              ),
+                              const SizedBox(width: 6),
+                              if (_membersLoading)
+                                const SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(strokeWidth: 1.5),
+                                )
+                              else
+                                Text(
+                                  '${_members.length} miembro${_members.length == 1 ? '' : 's'}',
+                                  style: TextStyle(
+                                    color: AppTheme.accentBlue,
+                                    fontSize: 12,
+                                    decoration: _members.isNotEmpty
+                                        ? TextDecoration.underline
+                                        : TextDecoration.none,
+                                  ),
+                                ),
+                              if (!_membersLoading && _members.isNotEmpty) ...[
+                                const SizedBox(width: 2),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  size: 14,
+                                  color: AppTheme.accentBlue,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                         if (!isCreator && userId != null) ...[
                           const SizedBox(height: 16),
                           Align(
@@ -379,6 +439,65 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
         context.read<CommunityProvider>().clearError();
       }
     }
+  }
+
+  void _showMembersList() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.dialogBg(context),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppTheme.borderColor(context),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Miembros (${_members.length})',
+            style: TextStyle(
+              color: AppTheme.textPrimary(context),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _members.length,
+              itemBuilder: (_, i) {
+                final user = _members[i];
+                return ListTile(
+                  leading: UserAvatar(avatarUrl: user.avatarUrl, radius: 20),
+                  title: Text(
+                    user.name,
+                    style: TextStyle(color: AppTheme.textPrimary(context)),
+                  ),
+                  subtitle: user.bio.isNotEmpty
+                      ? Text(
+                          user.bio,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppTheme.textSecondary(context),
+                            fontSize: 12,
+                          ),
+                        )
+                      : null,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildPostList(PostProvider postProvider, currentUser) {

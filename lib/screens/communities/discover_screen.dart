@@ -203,12 +203,17 @@ class _TopPostsTab extends StatelessWidget {
       return Column(
         children: posts.map((post) {
           final author = postProvider.authorOf(post.userId);
+          final communityName = context
+              .read<CommunityProvider>()
+              .communityById(post.communityId)
+              ?.name;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: PostCard(
               post: post,
               author: author,
               isVoted: postProvider.isVoted(post.id),
+              communityName: communityName,
               onVoteTap: currentUser != null
                   ? () => postProvider.vote(post.id, currentUser.id)
                   : () {},
@@ -225,6 +230,10 @@ class _TopPostsTab extends StatelessWidget {
     for (int i = 0; i < posts.length; i++) {
       final post = posts[i];
       final author = postProvider.authorOf(post.userId);
+      final communityName = context
+          .read<CommunityProvider>()
+          .communityById(post.communityId)
+          ?.name;
       columns[i % columnCount].add(
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
@@ -232,6 +241,7 @@ class _TopPostsTab extends StatelessWidget {
             post: post,
             author: author,
             isVoted: postProvider.isVoted(post.id),
+            communityName: communityName,
             onVoteTap: currentUser != null
                 ? () => postProvider.vote(post.id, currentUser.id)
                 : () {},

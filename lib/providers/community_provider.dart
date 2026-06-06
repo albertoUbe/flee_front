@@ -25,7 +25,7 @@ class CommunityProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   CommunityModel? communityById(int id) {
-    final combined = [..._allCommunities, ..._myCommunities];
+    final combined = [..._allCommunities, ..._myCommunities, ..._topCommunities];
     try {
       return combined.firstWhere((c) => c.id == id);
     } catch (_) {

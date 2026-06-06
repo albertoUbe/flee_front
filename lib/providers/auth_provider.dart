@@ -111,6 +111,15 @@ class AuthProvider extends ChangeNotifier {
     await signOut();
   }
 
+  Future<void> refreshUser() async {
+    if (_currentUser == null) return;
+    try {
+      _currentUser = await _userService.verify(_currentUser!.id);
+      await _persist(_currentUser!);
+      notifyListeners();
+    } catch (_) {}
+  }
+
   Future<void> signOut() async {
     await _prefs.remove(ApiConstants.userPrefsKey);
     _currentUser = null;

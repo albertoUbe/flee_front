@@ -77,8 +77,10 @@ class UserService {
     await ApiClient.delete(ApiConstants.deleteUser(id));
   }
 
-  Future<void> forgotPassword(String email) async {
-    await ApiClient.post(ApiConstants.forgotPassword(), {'email': email});
+  Future<String> forgotPassword(String email) async {
+    final data = await ApiClient.post(ApiConstants.forgotPassword(), {'email': email});
+    if (data is Map<String, dynamic>) return data['token'] as String;
+    return data as String;
   }
 
   Future<void> resetPassword(

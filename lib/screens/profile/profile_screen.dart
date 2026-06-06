@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/plan_provider.dart';
 import '../../widgets/user_avatar.dart';
@@ -14,7 +15,8 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with WidgetsBindingObserver {
   static const Color bgDark = Color(0xFF0A0F1F);
   static const Color textMuted = Color(0xFF9BB4D1);
   static const Color accentBlue = Color(0xFF42A5F5);
@@ -22,12 +24,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   static const Color gradientStart = Color(0xFF131C35);
   static const Color gradientEnd = Color(0xFF040712);
 
+  static const _fleeUtilBase = 'https://flee-util.vercel.app';
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PlanProvider>().loadPlans();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<AuthProvider>().refreshUser();
+    }
   }
 
   @override
@@ -196,6 +214,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
+                          if (user.userStatus == 'NotVerified') ...[
+                            const SizedBox(height: 24),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 4, bottom: 8),
+                              child: Text(
+                                'VERIFICACIÓN',
+                                style: TextStyle(
+                                  color: Color(0xFF42A5F5),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ),
+                            _buildTile(
+                              icon: Icons.verified_user_outlined,
+                              title: 'Verificar cuenta',
+                              subtitle: 'Activa tu cuenta desde el navegador',
+                              iconColor: accentBlue,
+                              trailing: const Icon(
+                                Icons.open_in_new,
+                                size: 14,
+                                color: textMuted,
+                              ),
+                              onTap: () async {
+                                final url = Uri.parse(
+                                  '$_fleeUtilBase/verify?userId=${user.id}',
+                                );
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                }
+                              },
+                            ),
+                          ],
                           const SizedBox(height: 24),
                           const Padding(
                             padding: EdgeInsets.only(left: 4, bottom: 8),

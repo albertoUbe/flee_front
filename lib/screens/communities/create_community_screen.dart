@@ -18,7 +18,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
 
   static const _durations = [1, 2, 4, 8, 12, 24];
 
-  // Paleta de colores unificada de Flee
   static const Color bgDark = Color(0xFF0A0F1F);
   static const Color textMuted = Color(0xFF9BB4D1);
   static const Color accentBlue = Color(0xFF42A5F5);
@@ -118,7 +117,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Campo: Nombre de la Comunidad
                             TextFormField(
                               controller: _nameCtrl,
                               maxLength: 100,
@@ -146,7 +144,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Campo: Descripción
                             TextFormField(
                               controller: _descCtrl,
                               maxLength: 500,
@@ -166,7 +163,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                             ),
                             const SizedBox(height: 28),
 
-                            // Sección de Duración
                             const Text(
                               'Duración',
                               style: TextStyle(
@@ -182,7 +178,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                             ),
                             const SizedBox(height: 16),
 
-                            // Selector de semanas (ChoiceChips)
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
@@ -220,45 +215,40 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                             ),
                             const SizedBox(height: 40),
 
-                            // Botón de Enviar (Centrado y ajustado al contenido)
                             Align(
-                              alignment: Alignment
-                                  .center, // Modificado a centro global
-                              child: SizedBox(
-                                width: isDesktop ? null : double.infinity,
-                                height: 48,
-                                child: FilledButton(
-                                  onPressed: isLoading ? null : _submit,
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: buttonBlue,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 40,
-                                    ), // Un poco más de padding para que luzca mejor centrado
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
+                              alignment: Alignment.center,
+                              child: FilledButton(
+                                onPressed: isLoading ? null : _submit,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: buttonBlue,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                  Colors.white,
-                                                ),
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Crear comunidad',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                  minimumSize: const Size(0, 48),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 40,
+                                  ),
                                 ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Crear comunidad',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
@@ -275,7 +265,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
     );
   }
 
-  /// Helper para la decoración homogénea de los inputs
   InputDecoration _inputDecoration({
     required String label,
     required IconData icon,

@@ -23,7 +23,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   final _picker = ImagePicker();
 
-  // Paleta de colores unificada y compartida de Flee
   static const Color bgDark = Color(0xFF0A0F1F);
   static const Color textMuted = Color(0xFF9BB4D1);
   static const Color accentBlue = Color(0xFF42A5F5);
@@ -165,55 +164,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       builder: (context, constraints) {
         final bool isDesktop = constraints.maxWidth > 600;
 
-        return Scaffold(
-          backgroundColor: bgDark,
-          appBar: AppBar(
+        return Container(
+          decoration: isDesktop
+              ? const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment(0.0, -0.2),
+                    radius: 1.3,
+                    colors: [gradientStart, gradientEnd],
+                    stops: [0.0, 1.0],
+                  ),
+                )
+              : const BoxDecoration(color: bgDark),
+          child: Scaffold(
             backgroundColor: Colors.transparent,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text(
-              'Editar perfil',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+              title: const Text(
+                'Editar perfil',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          extendBodyBehindAppBar: true,
-          body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: isDesktop
-                ? const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment(0.0, -0.2),
-                      radius: 1.3,
-                      colors: [gradientStart, gradientEnd],
-                      stops: [0.0, 1.0],
-                    ),
-                  )
-                : const BoxDecoration(color: bgDark),
-            child: SafeArea(
+            body: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: bgDark.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.06),
-                        ),
-                      ),
+                      padding: isDesktop
+                          ? const EdgeInsets.all(32)
+                          : EdgeInsets.zero,
+                      decoration: isDesktop
+                          ? BoxDecoration(
+                              color: bgDark.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.06),
+                              ),
+                            )
+                          : const BoxDecoration(),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Selector de Avatar Centrado
                             Center(child: _buildAvatarPicker()),
                             const SizedBox(height: 28),
 
@@ -262,44 +264,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             const SizedBox(height: 36),
 
-                            // Botón de Enviar (Estilo Guardar cambios)
                             Align(
                               alignment: Alignment.center,
-                              child: SizedBox(
-                                width: isDesktop ? null : double.infinity,
-                                height: 48,
-                                child: FilledButton(
-                                  onPressed: isLoading ? null : _submit,
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: buttonBlue,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 40,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
+                              child: FilledButton(
+                                onPressed: isLoading ? null : _submit,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: buttonBlue,
+                                  foregroundColor: Colors.white,
+                                  minimumSize: const Size(0, 48),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 40,
                                   ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                  Colors.white,
-                                                ),
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Guardar cambios',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
                                 ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Guardar cambios',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
@@ -316,7 +314,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  /// Helper homogeneizado para los inputs de Flee
   InputDecoration _inputDecoration({
     required String label,
     required IconData icon,

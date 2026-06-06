@@ -13,6 +13,7 @@ class PostProvider extends ChangeNotifier {
   PostProvider(this._postService, this._userService);
 
   List<PostModel> _feedPosts = [];
+  List<PostModel> _topPosts = [];
   final Map<int, List<PostModel>> _communityPosts = {};
   final Set<int> _votedPostIds = {};
   final Map<int, UserModel> _userCache = {};
@@ -20,6 +21,7 @@ class PostProvider extends ChangeNotifier {
   String? _errorMessage;
 
   List<PostModel> get feedPosts => _feedPosts;
+  List<PostModel> get topPosts => _topPosts;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -41,6 +43,21 @@ class PostProvider extends ChangeNotifier {
       _errorMessage = null;
     } on ApiException catch (e) {
       _errorMessage = 'Error al cargar el feed: ${e.statusCode}';
+    } catch (_) {
+      _errorMessage = 'Error de conexión';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loadTopPosts() async {
+    _setLoading(true);
+    try {
+      _topPosts = await _postService.getTopPosts();
+      await _cacheAuthors(_topPosts);
+      _errorMessage = null;
+    } on ApiException catch (e) {
+      _errorMessage = 'Error al cargar top posts: ${e.statusCode}';
     } catch (_) {
       _errorMessage = 'Error de conexión';
     } finally {

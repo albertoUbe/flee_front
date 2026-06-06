@@ -42,6 +42,8 @@ class ApiConstants {
   static String votePost(int postId, int userId) =>
       '$baseUrl/api/post/$postId/vote/$userId';
   static String deletePost(int id) => '$baseUrl/api/post/$id';
+  static String topPosts() => '$baseUrl/api/post/top';
+  static String topCommunities() => '$baseUrl/api/community/top';
 
   // Plan
   static String allPlans() => '$baseUrl/api/plan';

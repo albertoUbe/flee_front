@@ -8,6 +8,7 @@ class CommunityCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool isMember;
   final VoidCallback? onFollowTap;
+  final int? memberCount;
 
   const CommunityCard({
     super.key,
@@ -15,6 +16,7 @@ class CommunityCard extends StatelessWidget {
     required this.onTap,
     required this.isMember,
     this.onFollowTap,
+    this.memberCount,
   });
 
   @override
@@ -88,6 +90,22 @@ class CommunityCard extends StatelessWidget {
                       color: AppTheme.iconMuted(context),
                     ),
                   ),
+                  if (memberCount != null) ...[
+                    const SizedBox(width: 10),
+                    Icon(
+                      Icons.person_outline,
+                      size: 13,
+                      color: AppTheme.iconMuted(context),
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      '$memberCount',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppTheme.iconMuted(context),
+                      ),
+                    ),
+                  ],
                   const Spacer(),
                   if (onFollowTap != null)
                     _FollowButton(

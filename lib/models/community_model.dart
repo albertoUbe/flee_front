@@ -7,6 +7,7 @@ class CommunityModel {
   final DateTime endDate;
   final DateTime ghostDate;
   final String communityStatus;
+  final int memberCount;
 
   const CommunityModel({
     required this.id,
@@ -17,6 +18,7 @@ class CommunityModel {
     required this.endDate,
     required this.ghostDate,
     required this.communityStatus,
+    this.memberCount = 0,
   });
 
   factory CommunityModel.fromJson(Map<String, dynamic> json) => CommunityModel(
@@ -28,6 +30,7 @@ class CommunityModel {
         endDate: DateTime.parse(json['endDate'] as String),
         ghostDate: DateTime.parse(json['ghostDate'] as String),
         communityStatus: json['communityStatus'] as String? ?? 'Active',
+        memberCount: (json['memberCount'] as num?)?.toInt() ?? 0,
       );
 
   bool get isActive => communityStatus == 'Active';

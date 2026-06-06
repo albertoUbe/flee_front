@@ -10,11 +10,13 @@ class CommunityProvider extends ChangeNotifier {
 
   List<CommunityModel> _allCommunities = [];
   List<CommunityModel> _myCommunities = [];
+  List<CommunityModel> _topCommunities = [];
   bool _isLoading = false;
   String? _errorMessage;
 
   List<CommunityModel> get allCommunities => _allCommunities;
   List<CommunityModel> get myCommunities => _myCommunities;
+  List<CommunityModel> get topCommunities => _topCommunities;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -34,6 +36,20 @@ class CommunityProvider extends ChangeNotifier {
       _errorMessage = null;
     } on ApiException catch (e) {
       _errorMessage = 'Error al cargar comunidades: ${e.statusCode}';
+    } catch (_) {
+      _errorMessage = 'Error de conexión';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loadTopCommunities() async {
+    _setLoading(true);
+    try {
+      _topCommunities = await _service.getTopCommunities();
+      _errorMessage = null;
+    } on ApiException catch (e) {
+      _errorMessage = 'Error al cargar top comunidades: ${e.statusCode}';
     } catch (_) {
       _errorMessage = 'Error de conexión';
     } finally {

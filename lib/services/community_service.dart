@@ -10,6 +10,13 @@ class CommunityService {
         .toList();
   }
 
+  Future<List<CommunityModel>> getTopCommunities() async {
+    final data = await ApiClient.get(ApiConstants.topCommunities());
+    return (data as List)
+        .map((e) => CommunityModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<List<CommunityModel>> getCommunitiesByUser(int userId) async {
     final data = await ApiClient.get(ApiConstants.communitiesByUser(userId));
     return (data as List)

@@ -35,9 +35,10 @@ class ApiConstants {
 
   // Post
   static String allPosts() => '$baseUrl/api/post';
-  static String userFeed(int userId) => '$baseUrl/api/post/user/$userId/feed';
-  static String postsByCommunity(int communityId) =>
-      '$baseUrl/api/post/community/$communityId';
+  static String userFeed(int userId, {int page = 1}) =>
+      '$baseUrl/api/post/user/$userId/feed?page=$page&pageSize=30';
+  static String postsByCommunity(int communityId, {int page = 1}) =>
+      '$baseUrl/api/post/community/$communityId?page=$page&pageSize=30';
   static String createPost() => '$baseUrl/api/post';
   static String votePost(int postId, int userId) =>
       '$baseUrl/api/post/$postId/vote/$userId';

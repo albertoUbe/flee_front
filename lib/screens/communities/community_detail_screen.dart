@@ -22,14 +22,31 @@ class CommunityDetailScreen extends StatefulWidget {
 
 class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   late CommunityModel _community;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _community = widget.community;
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PostProvider>().loadCommunityPosts(_community.id);
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      context.read<PostProvider>().loadMoreCommunityPosts(_community.id);
+    }
   }
 
   ShapeBorder get _dialogShape => RoundedRectangleBorder(
@@ -300,12 +317,21 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
       );
     }
 
+    final hasMore = postProvider.communityPostsHasMore(_community.id);
+
     return RefreshIndicator(
       onRefresh: () => postProvider.loadCommunityPosts(_community.id),
       child: ListView.builder(
+        controller: _scrollController,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        itemCount: posts.length,
+        itemCount: posts.length + (hasMore ? 1 : 0),
         itemBuilder: (_, i) {
+          if (i == posts.length) {
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            );
+          }
           final post = posts[i];
           final author = postProvider.authorOf(post.userId);
           return Padding(

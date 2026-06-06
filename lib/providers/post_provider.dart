@@ -20,26 +20,51 @@ class PostProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
+  // Feed pagination
+  int _feedPage = 1;
+  bool _feedHasMore = false;
+  bool _isLoadingMoreFeed = false;
+  int? _feedUserId;
+
+  // Community posts pagination
+  final Map<int, int> _communityPostPages = {};
+  final Map<int, bool> _communityPostHasMore = {};
+  bool _isLoadingMoreCommunityPosts = false;
+
   List<PostModel> get feedPosts => _feedPosts;
   List<PostModel> get topPosts => _topPosts;
   bool get isLoading => _isLoading;
+  bool get isLoadingMoreFeed => _isLoadingMoreFeed;
+  bool get feedHasMore => _feedHasMore;
+  bool get isLoadingMoreCommunityPosts => _isLoadingMoreCommunityPosts;
   String? get errorMessage => _errorMessage;
 
   List<PostModel> communityPosts(int communityId) =>
       _communityPosts[communityId] ?? [];
+
+  bool communityPostsHasMore(int communityId) =>
+      _communityPostHasMore[communityId] ?? false;
 
   bool isVoted(int postId) => _votedPostIds.contains(postId);
 
   UserModel? authorOf(int userId) => _userCache[userId];
 
   Future<void> loadFeed({int? userId}) async {
+    _feedPage = 1;
+    _feedHasMore = false;
+    _feedUserId = userId;
     _setLoading(true);
     try {
-      final posts = userId != null
-          ? await _postService.getFeedByUser(userId)
-          : await _postService.getAllPosts();
-      _feedPosts = posts..sort((a, b) => b.postDate.compareTo(a.postDate));
-      await _cacheAuthors(posts);
+      if (userId != null) {
+        final result = await _postService.getFeedByUser(userId, page: 1);
+        _feedPosts = result.items..sort((a, b) => b.postDate.compareTo(a.postDate));
+        _feedHasMore = result.hasMore;
+      } else {
+        final posts = await _postService.getAllPosts();
+        _feedPosts = posts..sort((a, b) => b.postDate.compareTo(a.postDate));
+        _feedHasMore = false;
+      }
+      await _cacheAuthors(_feedPosts);
       _errorMessage = null;
     } on ApiException catch (e) {
       _errorMessage = 'Error al cargar el feed: ${e.statusCode}';
@@ -47,6 +72,25 @@ class PostProvider extends ChangeNotifier {
       _errorMessage = 'Error de conexión';
     } finally {
       _setLoading(false);
+    }
+  }
+
+  Future<void> loadMoreFeed() async {
+    if (_isLoadingMoreFeed || !_feedHasMore || _feedUserId == null) return;
+    _isLoadingMoreFeed = true;
+    notifyListeners();
+    try {
+      _feedPage++;
+      final result =
+          await _postService.getFeedByUser(_feedUserId!, page: _feedPage);
+      _feedPosts = [..._feedPosts, ...result.items];
+      _feedHasMore = result.hasMore;
+      await _cacheAuthors(result.items);
+    } catch (_) {
+      _feedPage--;
+    } finally {
+      _isLoadingMoreFeed = false;
+      notifyListeners();
     }
   }
 
@@ -66,12 +110,16 @@ class PostProvider extends ChangeNotifier {
   }
 
   Future<void> loadCommunityPosts(int communityId) async {
+    _communityPostPages[communityId] = 1;
+    _communityPostHasMore[communityId] = false;
     _setLoading(true);
     try {
-      final posts = await _postService.getPostsByCommunity(communityId);
-      _communityPosts[communityId] = posts
+      final result =
+          await _postService.getPostsByCommunity(communityId, page: 1);
+      _communityPosts[communityId] = result.items
         ..sort((a, b) => b.postDate.compareTo(a.postDate));
-      await _cacheAuthors(posts);
+      _communityPostHasMore[communityId] = result.hasMore;
+      await _cacheAuthors(result.items);
       _errorMessage = null;
     } on ApiException catch (e) {
       _errorMessage = 'Error al cargar posts: ${e.statusCode}';
@@ -79,6 +127,30 @@ class PostProvider extends ChangeNotifier {
       _errorMessage = 'Error de conexión';
     } finally {
       _setLoading(false);
+    }
+  }
+
+  Future<void> loadMoreCommunityPosts(int communityId) async {
+    if (_isLoadingMoreCommunityPosts ||
+        !(_communityPostHasMore[communityId] ?? false)) return;
+    _isLoadingMoreCommunityPosts = true;
+    notifyListeners();
+    try {
+      final nextPage = (_communityPostPages[communityId] ?? 1) + 1;
+      final result =
+          await _postService.getPostsByCommunity(communityId, page: nextPage);
+      _communityPosts[communityId] = [
+        ...(_communityPosts[communityId] ?? []),
+        ...result.items,
+      ];
+      _communityPostPages[communityId] = nextPage;
+      _communityPostHasMore[communityId] = result.hasMore;
+      await _cacheAuthors(result.items);
+    } catch (_) {
+      // silencioso — el usuario puede reintentar haciendo scroll
+    } finally {
+      _isLoadingMoreCommunityPosts = false;
+      notifyListeners();
     }
   }
 

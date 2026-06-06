@@ -16,14 +16,32 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = context.read<AuthProvider>().currentUser?.id;
       context.read<PostProvider>().loadFeed(userId: userId);
       context.read<CommunityProvider>().loadAllCommunities();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      context.read<PostProvider>().loadMoreFeed();
+    }
   }
 
   @override
@@ -55,7 +73,9 @@ class _FeedScreenState extends State<FeedScreen> {
                         Icons.refresh,
                         color: AppTheme.textSecondary(context),
                       ),
-                      onPressed: () => context.read<PostProvider>().loadFeed(userId: currentUser?.id),
+                      onPressed: () => context
+                          .read<PostProvider>()
+                          .loadFeed(userId: currentUser?.id),
                     ),
                     const SizedBox(width: 16),
                   ],
@@ -64,25 +84,54 @@ class _FeedScreenState extends State<FeedScreen> {
           body: postProvider.isLoading && postProvider.feedPosts.isEmpty
               ? const Center(child: LoadingIndicator())
               : postProvider.feedPosts.isEmpty
-              ? _buildEmpty()
-              : RefreshIndicator(
-                  color: AppTheme.accentBlue,
-                  backgroundColor: AppTheme.scaffoldBg(context),
-                  onRefresh: () => context.read<PostProvider>().loadFeed(userId: currentUser?.id),
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: isDesktop ? 16 : 8,
+                  ? _buildEmpty()
+                  : RefreshIndicator(
+                      color: AppTheme.accentBlue,
+                      backgroundColor: AppTheme.scaffoldBg(context),
+                      onRefresh: () => context
+                          .read<PostProvider>()
+                          .loadFeed(userId: currentUser?.id),
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: isDesktop ? 16 : 8,
+                        ),
+                        child: Column(
+                          children: [
+                            _buildColumns(
+                              postProvider,
+                              currentUser,
+                              isDesktop,
+                              constraints.maxWidth,
+                            ),
+                            if (postProvider.isLoadingMoreFeed)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppTheme.accentBlue,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              ),
+                            if (!postProvider.feedHasMore &&
+                                postProvider.feedPosts.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 24),
+                                child: Text(
+                                  'Ya has visto todo',
+                                  style: TextStyle(
+                                    color: AppTheme.textSecondary(context),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: _buildColumns(
-                      postProvider,
-                      currentUser,
-                      isDesktop,
-                      constraints.maxWidth,
-                    ),
-                  ),
-                ),
         );
       },
     );
@@ -122,8 +171,8 @@ class _FeedScreenState extends State<FeedScreen> {
     final int columnCount = availableWidth > 1200
         ? 3
         : availableWidth > 750
-        ? 2
-        : 1;
+            ? 2
+            : 1;
     final List<List<Widget>> columns = List.generate(columnCount, (_) => []);
 
     for (int i = 0; i < posts.length; i++) {
@@ -181,8 +230,8 @@ class _FeedScreenState extends State<FeedScreen> {
       color: AppTheme.accentBlue,
       backgroundColor: AppTheme.scaffoldBg(context),
       onRefresh: () => context.read<PostProvider>().loadFeed(
-        userId: context.read<AuthProvider>().currentUser?.id,
-      ),
+            userId: context.read<AuthProvider>().currentUser?.id,
+          ),
       child: ListView(
         children: [
           const SizedBox(height: 140),

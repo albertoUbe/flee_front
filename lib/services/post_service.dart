@@ -3,6 +3,12 @@ import '../core/constants/api_constants.dart';
 import '../models/post_model.dart';
 import 'api_client.dart';
 
+class PostPage {
+  final List<PostModel> items;
+  final bool hasMore;
+  PostPage({required this.items, required this.hasMore});
+}
+
 class PostService {
   Future<List<PostModel>> getAllPosts() async {
     final data = await ApiClient.get(ApiConstants.allPosts());
@@ -11,11 +17,15 @@ class PostService {
         .toList();
   }
 
-  Future<List<PostModel>> getFeedByUser(int userId) async {
-    final data = await ApiClient.get(ApiConstants.userFeed(userId));
-    return (data as List)
-        .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+  Future<PostPage> getFeedByUser(int userId, {int page = 1}) async {
+    final data = await ApiClient.get(ApiConstants.userFeed(userId, page: page));
+    final map = data as Map<String, dynamic>;
+    return PostPage(
+      items: (map['items'] as List)
+          .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      hasMore: map['hasMore'] as bool,
+    );
   }
 
   Future<List<PostModel>> getTopPosts() async {
@@ -25,11 +35,16 @@ class PostService {
         .toList();
   }
 
-  Future<List<PostModel>> getPostsByCommunity(int communityId) async {
-    final data = await ApiClient.get(ApiConstants.postsByCommunity(communityId));
-    return (data as List)
-        .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+  Future<PostPage> getPostsByCommunity(int communityId, {int page = 1}) async {
+    final data = await ApiClient.get(
+        ApiConstants.postsByCommunity(communityId, page: page));
+    final map = data as Map<String, dynamic>;
+    return PostPage(
+      items: (map['items'] as List)
+          .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      hasMore: map['hasMore'] as bool,
+    );
   }
 
   Future<PostModel> createPost(

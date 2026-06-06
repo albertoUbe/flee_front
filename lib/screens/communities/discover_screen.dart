@@ -285,9 +285,16 @@ class _TopCommunitiesTabState extends State<_TopCommunitiesTab> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<CommunityProvider>().clearSearch();
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
-    context.read<CommunityProvider>().clearSearch();
     super.dispose();
   }
 

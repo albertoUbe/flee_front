@@ -23,6 +23,7 @@ class CommunityDetailScreen extends StatefulWidget {
 class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   late CommunityModel _community;
   late ScrollController _scrollController;
+  bool _headerExpanded = true;
 
   @override
   void initState() {
@@ -33,6 +34,9 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = context.read<AuthProvider>().currentUser?.id;
       context.read<PostProvider>().loadCommunityPosts(_community.id, userId: userId);
+      if (userId != null) {
+        context.read<CommunityProvider>().loadMyCommunities(userId);
+      }
     });
   }
 
@@ -60,6 +64,8 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     final postProvider = context.watch<PostProvider>();
     final currentUser = context.watch<AuthProvider>().currentUser;
     final isCreator = currentUser?.id == _community.creatorId;
+    final communityProvider = context.watch<CommunityProvider>();
+    final isMember = communityProvider.myCommunities.any((c) => c.id == _community.id);
     final statusColor = AppTheme.communityStatusColor(
       _community.communityStatus,
     );
@@ -167,7 +173,7 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
                         borderRadius: BorderRadius.circular(24),
                         child: Column(
                           children: [
-                            _buildHeader(),
+                            _buildHeader(isCreator, isMember, currentUser?.id),
                             Expanded(
                               child:
                                   postProvider.isLoading &&
@@ -217,10 +223,9 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isCreator, bool isMember, int? userId) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppTheme.headerBg(context),
         border: Border(
@@ -230,59 +235,150 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_community.description.isNotEmpty) ...[
-            Text(
-              _community.description,
-              style: TextStyle(
-                color: AppTheme.textPrimary(context),
-                fontSize: 14,
-                height: 1.4,
+          InkWell(
+            onTap: () => setState(() => _headerExpanded = !_headerExpanded),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 14,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Información',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  AnimatedRotation(
+                    turns: _headerExpanded ? 0.0 : -0.5,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      Icons.keyboard_arrow_up,
+                      size: 18,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-          ],
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today_outlined,
-                size: 14,
-                color: AppTheme.textSecondary(context),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  DateFormatter.communityEndLabel(_community.endDate),
-                  style: TextStyle(
-                    color: AppTheme.textSecondary(context),
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
           ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(
-                Icons.archive_outlined,
-                size: 14,
-                color: AppTheme.textSecondary(context),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  'Archiva: ${DateFormatter.formatDate(_community.ghostDate)}',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary(context),
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            child: _headerExpanded
+                ? Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_community.description.isNotEmpty) ...[
+                          Text(
+                            _community.description,
+                            style: TextStyle(
+                              color: AppTheme.textPrimary(context),
+                              fontSize: 14,
+                              height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_outlined,
+                              size: 14,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                DateFormatter.communityEndLabel(_community.endDate),
+                                style: TextStyle(
+                                  color: AppTheme.textSecondary(context),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.archive_outlined,
+                              size: 14,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Archiva: ${DateFormatter.formatDate(_community.ghostDate)}',
+                                style: TextStyle(
+                                  color: AppTheme.textSecondary(context),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!isCreator && userId != null) ...[
+                          const SizedBox(height: 16),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: isMember
+                                ? OutlinedButton.icon(
+                                    onPressed: () => _followUnfollow(userId),
+                                    icon: const Icon(Icons.check, size: 16),
+                                    label: const Text('Siguiendo'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: AppTheme.accentBlue,
+                                      side: const BorderSide(
+                                        color: AppTheme.accentBlue,
+                                        width: 1,
+                                      ),
+                                    ),
+                                  )
+                                : FilledButton.icon(
+                                    onPressed: _community.isActive
+                                        ? () => _followUnfollow(userId)
+                                        : null,
+                                    icon: const Icon(Icons.add, size: 16),
+                                    label: const Text('Unirse'),
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: AppTheme.buttonBlue,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _followUnfollow(int userId) async {
+    await context.read<CommunityProvider>().followUnfollow(_community.id, userId);
+    if (mounted) {
+      final error = context.read<CommunityProvider>().errorMessage;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
+        context.read<CommunityProvider>().clearError();
+      }
+    }
   }
 
   Widget _buildPostList(PostProvider postProvider, currentUser) {

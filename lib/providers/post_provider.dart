@@ -47,6 +47,10 @@ class PostProvider extends ChangeNotifier {
 
   bool isVoted(int postId) => _votedPostIds.contains(postId);
 
+  void _initVotedFromPosts(List<PostModel> posts) {
+    _votedPostIds.addAll(posts.where((p) => p.userHasVoted).map((p) => p.id));
+  }
+
   UserModel? authorOf(int userId) => _userCache[userId];
 
   Future<void> loadFeed({int? userId}) async {
@@ -60,10 +64,11 @@ class PostProvider extends ChangeNotifier {
         _feedPosts = result.items..sort((a, b) => b.postDate.compareTo(a.postDate));
         _feedHasMore = result.hasMore;
       } else {
-        final posts = await _postService.getAllPosts();
+        final posts = await _postService.getAllPosts(userId: userId);
         _feedPosts = posts..sort((a, b) => b.postDate.compareTo(a.postDate));
         _feedHasMore = false;
       }
+      _initVotedFromPosts(_feedPosts);
       await _cacheAuthors(_feedPosts);
       _errorMessage = null;
     } on ApiException catch (e) {
@@ -85,6 +90,7 @@ class PostProvider extends ChangeNotifier {
           await _postService.getFeedByUser(_feedUserId!, page: _feedPage);
       _feedPosts = [..._feedPosts, ...result.items];
       _feedHasMore = result.hasMore;
+      _initVotedFromPosts(result.items);
       await _cacheAuthors(result.items);
     } catch (_) {
       _feedPage--;
@@ -94,10 +100,11 @@ class PostProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> loadTopPosts() async {
+  Future<void> loadTopPosts({int? userId}) async {
     _setLoading(true);
     try {
-      _topPosts = await _postService.getTopPosts();
+      _topPosts = await _postService.getTopPosts(userId: userId);
+      _initVotedFromPosts(_topPosts);
       await _cacheAuthors(_topPosts);
       _errorMessage = null;
     } on ApiException catch (e) {
@@ -109,16 +116,17 @@ class PostProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> loadCommunityPosts(int communityId) async {
+  Future<void> loadCommunityPosts(int communityId, {int? userId}) async {
     _communityPostPages[communityId] = 1;
     _communityPostHasMore[communityId] = false;
     _setLoading(true);
     try {
       final result =
-          await _postService.getPostsByCommunity(communityId, page: 1);
+          await _postService.getPostsByCommunity(communityId, page: 1, userId: userId);
       _communityPosts[communityId] = result.items
         ..sort((a, b) => b.postDate.compareTo(a.postDate));
       _communityPostHasMore[communityId] = result.hasMore;
+      _initVotedFromPosts(result.items);
       await _cacheAuthors(result.items);
       _errorMessage = null;
     } on ApiException catch (e) {
@@ -145,6 +153,7 @@ class PostProvider extends ChangeNotifier {
       ];
       _communityPostPages[communityId] = nextPage;
       _communityPostHasMore[communityId] = result.hasMore;
+      _initVotedFromPosts(result.items);
       await _cacheAuthors(result.items);
     } catch (_) {
       // silencioso — el usuario puede reintentar haciendo scroll

@@ -37,7 +37,7 @@ class _DiscoverScreenState extends State<DiscoverScreen>
   Future<void> _loadData() async {
     final userId = context.read<AuthProvider>().currentUser?.id;
     await Future.wait([
-      context.read<PostProvider>().loadTopPosts(),
+      context.read<PostProvider>().loadTopPosts(userId: userId),
       context.read<CommunityProvider>().loadTopCommunities(),
       if (userId != null)
         context.read<CommunityProvider>().loadMyCommunities(userId),
@@ -82,7 +82,8 @@ class _DiscoverScreenState extends State<DiscoverScreen>
                       icon: Icon(Icons.refresh, color: AppTheme.textSecondary(context)),
                       onPressed: () {
                         if (_tabController.index == 0) {
-                          context.read<PostProvider>().loadTopPosts();
+                          final uid = context.read<AuthProvider>().currentUser?.id;
+                          context.read<PostProvider>().loadTopPosts(userId: uid);
                         } else {
                           context.read<CommunityProvider>().loadTopCommunities();
                         }
@@ -150,7 +151,10 @@ class _TopPostsTab extends StatelessWidget {
       return RefreshIndicator(
         color: AppTheme.accentBlue,
         backgroundColor: AppTheme.scaffoldBg(context),
-        onRefresh: () => context.read<PostProvider>().loadTopPosts(),
+        onRefresh: () {
+          final uid = context.read<AuthProvider>().currentUser?.id;
+          return context.read<PostProvider>().loadTopPosts(userId: uid);
+        },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
@@ -262,7 +266,7 @@ class _TopPostsTab extends StatelessWidget {
 
 // ── Tab: Top comunidades ──────────────────────────────────────────────────────
 
-class _TopCommunitiesTab extends StatelessWidget {
+class _TopCommunitiesTab extends StatefulWidget {
   final bool isDesktop;
   final dynamic currentUser;
   final VoidCallback onDetailBack;
@@ -274,41 +278,128 @@ class _TopCommunitiesTab extends StatelessWidget {
   });
 
   @override
+  State<_TopCommunitiesTab> createState() => _TopCommunitiesTabState();
+}
+
+class _TopCommunitiesTabState extends State<_TopCommunitiesTab> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    context.read<CommunityProvider>().clearSearch();
+    super.dispose();
+  }
+
+  Future<void> _performSearch() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+    await context.read<CommunityProvider>().searchCommunities(query);
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    context.read<CommunityProvider>().clearSearch();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final communityProvider = context.watch<CommunityProvider>();
-    final communities = communityProvider.topCommunities;
+    final hasSearch = communityProvider.searchResults != null;
+    final communities = hasSearch
+        ? communityProvider.searchResults!
+        : communityProvider.topCommunities;
 
-    if (communityProvider.isLoading && communities.isEmpty) {
+    final searchBar = Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Buscar comunidades...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: hasSearch
+                    ? IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: _clearSearch,
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+              onSubmitted: (_) => _performSearch(),
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: _performSearch,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.accentBlue,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Buscar'),
+          ),
+        ],
+      ),
+    );
+
+    if (communityProvider.isSearchLoading) {
+      return Column(
+        children: [
+          searchBar,
+          const Expanded(child: Center(child: LoadingIndicator())),
+        ],
+      );
+    }
+
+    if (!hasSearch && communityProvider.isLoading && communities.isEmpty) {
       return const Center(child: LoadingIndicator());
     }
 
     if (communities.isEmpty) {
-      return RefreshIndicator(
-        color: AppTheme.accentBlue,
-        backgroundColor: AppTheme.scaffoldBg(context),
-        onRefresh: () => context.read<CommunityProvider>().loadTopCommunities(),
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            const SizedBox(height: 100),
-            Center(
-              child: Text(
-                'No hay comunidades disponibles',
-                style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 16),
+      final message = hasSearch
+          ? 'No se encontraron comunidades con ese nombre'
+          : 'No hay comunidades disponibles';
+      return Column(
+        children: [
+          searchBar,
+          Expanded(
+            child: RefreshIndicator(
+              color: AppTheme.accentBlue,
+              backgroundColor: AppTheme.scaffoldBg(context),
+              onRefresh: () => context.read<CommunityProvider>().loadTopCommunities(),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 100),
+                  Center(
+                    child: Text(
+                      message,
+                      style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
     final myIds = communityProvider.myCommunities.map((c) => c.id).toSet();
 
-    return RefreshIndicator(
+    final listContent = RefreshIndicator(
       onRefresh: () => context.read<CommunityProvider>().loadTopCommunities(),
       color: AppTheme.accentBlue,
       backgroundColor: AppTheme.scaffoldBg(context),
-      child: isDesktop
+      child: widget.isDesktop
           ? SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
@@ -331,6 +422,13 @@ class _TopCommunitiesTab extends StatelessWidget {
               itemBuilder: (_, i) => _cardItem(context, communities[i], myIds),
             ),
     );
+
+    return Column(
+      children: [
+        searchBar,
+        Expanded(child: listContent),
+      ],
+    );
   }
 
   Widget _cardItem(BuildContext context, CommunityModel community, Set<int> myIds) {
@@ -339,8 +437,8 @@ class _TopCommunitiesTab extends StatelessWidget {
       isMember: myIds.contains(community.id),
       memberCount: community.memberCount,
       onTap: () => _openDetail(context, community),
-      onFollowTap: currentUser != null
-          ? () => _followUnfollow(context, community.id, currentUser.id)
+      onFollowTap: widget.currentUser != null
+          ? () => _followUnfollow(context, community.id, widget.currentUser.id)
           : null,
     );
   }
@@ -349,7 +447,7 @@ class _TopCommunitiesTab extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => CommunityDetailScreen(community: community)),
-    ).then((_) => onDetailBack());
+    ).then((_) => widget.onDetailBack());
   }
 
   Future<void> _followUnfollow(BuildContext context, int communityId, int userId) async {

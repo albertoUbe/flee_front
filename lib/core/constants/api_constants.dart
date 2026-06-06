@@ -32,18 +32,22 @@ class ApiConstants {
       '$baseUrl/api/community/$communityId/follow/$userId';
   static String manageAdmin(int communityId, int ownerId, int userId) =>
       '$baseUrl/api/community/$communityId/$ownerId/admin/$userId';
+  static String searchCommunities(String name) =>
+      '$baseUrl/api/community?name=${Uri.encodeComponent(name)}';
 
   // Post
-  static String allPosts() => '$baseUrl/api/post';
+  static String allPosts({int? userId}) =>
+      userId != null ? '$baseUrl/api/post?userId=$userId' : '$baseUrl/api/post';
   static String userFeed(int userId, {int page = 1}) =>
       '$baseUrl/api/post/user/$userId/feed?page=$page&pageSize=30';
-  static String postsByCommunity(int communityId, {int page = 1}) =>
-      '$baseUrl/api/post/community/$communityId?page=$page&pageSize=30';
+  static String postsByCommunity(int communityId, {int page = 1, int? userId}) =>
+      '$baseUrl/api/post/community/$communityId?page=$page&pageSize=30${userId != null ? '&userId=$userId' : ''}';
   static String createPost() => '$baseUrl/api/post';
   static String votePost(int postId, int userId) =>
       '$baseUrl/api/post/$postId/vote/$userId';
   static String deletePost(int id) => '$baseUrl/api/post/$id';
-  static String topPosts() => '$baseUrl/api/post/top';
+  static String topPosts({int? userId}) =>
+      userId != null ? '$baseUrl/api/post/top?userId=$userId' : '$baseUrl/api/post/top';
   static String topCommunities() => '$baseUrl/api/community/top';
 
   // Plan

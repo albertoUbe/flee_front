@@ -11,13 +11,17 @@ class CommunityProvider extends ChangeNotifier {
   List<CommunityModel> _allCommunities = [];
   List<CommunityModel> _myCommunities = [];
   List<CommunityModel> _topCommunities = [];
+  List<CommunityModel>? _searchResults;
   bool _isLoading = false;
+  bool _isSearchLoading = false;
   String? _errorMessage;
 
   List<CommunityModel> get allCommunities => _allCommunities;
   List<CommunityModel> get myCommunities => _myCommunities;
   List<CommunityModel> get topCommunities => _topCommunities;
+  List<CommunityModel>? get searchResults => _searchResults;
   bool get isLoading => _isLoading;
+  bool get isSearchLoading => _isSearchLoading;
   String? get errorMessage => _errorMessage;
 
   CommunityModel? communityById(int id) {
@@ -140,6 +144,27 @@ class CommunityProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  Future<void> searchCommunities(String name) async {
+    _isSearchLoading = true;
+    notifyListeners();
+    try {
+      _searchResults = await _service.searchCommunities(name);
+      _errorMessage = null;
+    } on ApiException catch (e) {
+      _errorMessage = 'Error al buscar: ${e.statusCode}';
+    } catch (_) {
+      _errorMessage = 'Error de conexión';
+    } finally {
+      _isSearchLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void clearSearch() {
+    _searchResults = null;
+    notifyListeners();
   }
 
   Future<void> followUnfollow(int communityId, int userId) async {

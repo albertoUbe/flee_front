@@ -31,7 +31,8 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PostProvider>().loadCommunityPosts(_community.id);
+      final userId = context.read<AuthProvider>().currentUser?.id;
+      context.read<PostProvider>().loadCommunityPosts(_community.id, userId: userId);
     });
   }
 
@@ -201,8 +202,10 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
                       ),
                     );
                     if (posted == true && mounted) {
+                      final userId = context.read<AuthProvider>().currentUser?.id;
                       context.read<PostProvider>().loadCommunityPosts(
                         _community.id,
+                        userId: userId,
                       );
                     }
                   },
@@ -286,7 +289,10 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     final posts = postProvider.communityPosts(_community.id);
     if (posts.isEmpty) {
       return RefreshIndicator(
-        onRefresh: () => postProvider.loadCommunityPosts(_community.id),
+        onRefresh: () {
+          final userId = context.read<AuthProvider>().currentUser?.id;
+          return postProvider.loadCommunityPosts(_community.id, userId: userId);
+        },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [

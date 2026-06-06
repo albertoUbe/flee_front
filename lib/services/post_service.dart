@@ -10,8 +10,8 @@ class PostPage {
 }
 
 class PostService {
-  Future<List<PostModel>> getAllPosts() async {
-    final data = await ApiClient.get(ApiConstants.allPosts());
+  Future<List<PostModel>> getAllPosts({int? userId}) async {
+    final data = await ApiClient.get(ApiConstants.allPosts(userId: userId));
     return (data as List)
         .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -28,16 +28,16 @@ class PostService {
     );
   }
 
-  Future<List<PostModel>> getTopPosts() async {
-    final data = await ApiClient.get(ApiConstants.topPosts());
+  Future<List<PostModel>> getTopPosts({int? userId}) async {
+    final data = await ApiClient.get(ApiConstants.topPosts(userId: userId));
     return (data as List)
         .map((e) => PostModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
-  Future<PostPage> getPostsByCommunity(int communityId, {int page = 1}) async {
+  Future<PostPage> getPostsByCommunity(int communityId, {int page = 1, int? userId}) async {
     final data = await ApiClient.get(
-        ApiConstants.postsByCommunity(communityId, page: page));
+        ApiConstants.postsByCommunity(communityId, page: page, userId: userId));
     final map = data as Map<String, dynamic>;
     return PostPage(
       items: (map['items'] as List)

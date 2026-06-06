@@ -62,6 +62,13 @@ class CommunityService {
     await ApiClient.post(ApiConstants.followCommunity(communityId, userId), {});
   }
 
+  Future<List<CommunityModel>> searchCommunities(String name) async {
+    final data = await ApiClient.get(ApiConstants.searchCommunities(name));
+    return (data as List)
+        .map((e) => CommunityModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<void> manageAdmin(int communityId, int ownerId, int userId) async {
     await ApiClient.post(
       ApiConstants.manageAdmin(communityId, ownerId, userId),

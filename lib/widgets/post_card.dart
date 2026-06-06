@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
 import '../core/utils/date_formatter.dart';
+import '../core/theme/app_theme.dart';
 import 'user_avatar.dart';
 
 class PostCard extends StatelessWidget {
@@ -11,10 +12,6 @@ class PostCard extends StatelessWidget {
   final bool isVoted;
   final VoidCallback onVoteTap;
   final VoidCallback? onDeleteTap;
-
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
 
   const PostCard({
     super.key,
@@ -30,9 +27,9 @@ class PostCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.6),
+        color: AppTheme.cardBackground(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: AppTheme.borderColor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,8 +47,8 @@ class PostCard extends StatelessWidget {
                     children: [
                       Text(
                         author?.name ?? 'Usuario',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
@@ -60,7 +57,7 @@ class PostCard extends StatelessWidget {
                         DateFormatter.formatDateTime(post.postDate),
                         style: TextStyle(
                           fontSize: 11,
-                          color: textMuted.withValues(alpha: 0.7),
+                          color: AppTheme.iconMuted(context),
                         ),
                       ),
                     ],
@@ -70,7 +67,7 @@ class PostCard extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       Icons.delete_outline,
-                      color: textMuted.withValues(alpha: 0.5),
+                      color: AppTheme.iconMuted(context),
                       size: 20,
                     ),
                     onPressed: onDeleteTap,
@@ -86,7 +83,10 @@ class PostCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Text(
                 post.text,
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
+                style: TextStyle(
+                  color: AppTheme.textPrimary(context).withValues(alpha: 0.7),
+                  fontSize: 14,
+                ),
               ),
             ),
 
@@ -104,21 +104,21 @@ class PostCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   placeholder: (ctx, url) => Container(
                     height: 200,
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: AppTheme.placeholderBg(context),
                     child: Center(
                       child: CircularProgressIndicator(
-                        color: accentBlue,
+                        color: AppTheme.accentBlue,
                         strokeWidth: 2,
                       ),
                     ),
                   ),
                   errorWidget: (ctx, url, err) => Container(
                     height: 100,
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: AppTheme.placeholderBg(context),
                     child: Center(
                       child: Icon(
                         Icons.broken_image_outlined,
-                        color: textMuted.withValues(alpha: 0.4),
+                        color: AppTheme.iconMuted(context),
                       ),
                     ),
                   ),
@@ -136,7 +136,7 @@ class PostCard extends StatelessWidget {
                     isVoted ? Icons.favorite : Icons.favorite_border,
                     color: isVoted
                         ? Colors.redAccent
-                        : textMuted.withValues(alpha: 0.5),
+                        : AppTheme.iconMuted(context),
                     size: 20,
                   ),
                   onPressed: onVoteTap,

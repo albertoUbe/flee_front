@@ -4,6 +4,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/plan_provider.dart';
 import '../../widgets/user_avatar.dart';
 import '../../core/utils/date_formatter.dart';
+import '../../core/theme/app_theme.dart';
 import 'edit_profile_screen.dart';
 import 'plans_screen.dart';
 
@@ -15,13 +16,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
-  static const Color gradientStart = Color(0xFF131C35);
-  static const Color gradientEnd = Color(0xFF040712);
-
   @override
   void initState() {
     super.initState();
@@ -46,31 +40,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         return Container(
           decoration: isDesktop
-              ? const BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment(0.0, -0.2),
-                    radius: 1.3,
-                    colors: [gradientStart, gradientEnd],
-                    stops: [0.0, 1.0],
-                  ),
-                )
-              : const BoxDecoration(color: bgDark),
+              ? AppTheme.gradientDecoration(context)
+              : BoxDecoration(color: AppTheme.scaffoldBg(context)),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.white),
-              title: const Text(
+              iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
+              title: Text(
                 'Perfil',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.textPrimary(context),
                   fontWeight: FontWeight.bold,
                 ),
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, color: textMuted),
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    color: AppTheme.textSecondary(context),
+                  ),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -96,10 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       decoration: isDesktop
                           ? BoxDecoration(
-                              color: bgDark.withValues(alpha: 0.6),
+                              color: AppTheme.cardBackground(context),
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.06),
+                                color: AppTheme.borderColor(context),
                               ),
                             )
                           : const BoxDecoration(),
@@ -116,8 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const SizedBox(height: 16),
                                 Text(
                                   user.name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: AppTheme.textPrimary(context),
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -125,8 +115,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   user.email,
-                                  style: const TextStyle(
-                                    color: textMuted,
+                                  style: TextStyle(
+                                    color: AppTheme.textSecondary(context),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -134,8 +124,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const SizedBox(height: 14),
                                   Text(
                                     user.bio,
-                                    style: const TextStyle(
-                                      color: Colors.white70,
+                                    style: TextStyle(
+                                      color: AppTheme.textSecondary(
+                                        context,
+                                      ).withValues(alpha: 0.8),
                                       fontSize: 14,
                                     ),
                                     textAlign: TextAlign.center,
@@ -147,12 +139,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 32),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4, bottom: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
                               'CUENTA Y SUSCRIPCIÓN',
                               style: TextStyle(
-                                color: textMuted,
+                                color: AppTheme.textSecondary(context),
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.2,
@@ -160,13 +152,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           _buildTile(
+                            context: context,
                             icon: Icons.workspace_premium_outlined,
                             title: 'Plan actual',
                             subtitle: currentPlan?.name ?? 'Cargando...',
-                            trailing: const Icon(
+                            trailing: Icon(
                               Icons.arrow_forward_ios,
                               size: 14,
-                              color: textMuted,
+                              color: AppTheme.textSecondary(context),
                             ),
                             onTap: () => Navigator.push(
                               context,
@@ -176,18 +169,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           _buildTile(
+                            context: context,
                             icon: Icons.calendar_today_outlined,
                             title: 'Miembro desde',
                             subtitle: DateFormatter.formatDate(user.createdAt),
                           ),
                           _buildTile(
+                            context: context,
                             icon: Icons.star_border_outlined,
                             title: 'Planes de suscripción',
                             subtitle: 'Explora opciones premium',
-                            trailing: const Icon(
+                            trailing: Icon(
                               Icons.arrow_forward_ios,
                               size: 14,
-                              color: textMuted,
+                              color: AppTheme.textSecondary(context),
                             ),
                             onTap: () => Navigator.push(
                               context,
@@ -197,8 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4, bottom: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
                               'ZONA DE SEGURIDAD',
                               style: TextStyle(
@@ -210,6 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           _buildTile(
+                            context: context,
                             icon: Icons.logout,
                             title: 'Cerrar sesión',
                             titleColor: Colors.orangeAccent,
@@ -217,6 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onTap: _signOut,
                           ),
                           _buildTile(
+                            context: context,
                             icon: Icons.delete_forever_outlined,
                             title: 'Eliminar cuenta',
                             titleColor: Colors.redAccent,
@@ -237,30 +234,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildTile({
+    required BuildContext context,
     required IconData icon,
     required String title,
     String? subtitle,
     Widget? trailing,
-    Color titleColor = Colors.white,
-    Color iconColor = textMuted,
+    Color? titleColor,
+    Color? iconColor,
     VoidCallback? onTap,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.4),
+        color: AppTheme.headerBg(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.02)),
+        border: Border.all(color: AppTheme.borderColor(context)),
       ),
       child: ListTile(
         onTap: onTap,
         dense: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        leading: Icon(icon, color: iconColor, size: 20),
+        leading: Icon(
+          icon,
+          color: iconColor ?? AppTheme.textSecondary(context),
+          size: 20,
+        ),
         title: Text(
           title,
           style: TextStyle(
-            color: titleColor,
+            color: titleColor ?? AppTheme.textPrimary(context),
             fontWeight: FontWeight.w600,
             fontSize: 14,
           ),
@@ -268,7 +270,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         subtitle: subtitle != null
             ? Text(
                 subtitle,
-                style: const TextStyle(color: textMuted, fontSize: 12),
+                style: TextStyle(
+                  color: AppTheme.textSecondary(context),
+                  fontSize: 12,
+                ),
               )
             : null,
         trailing: trailing,
@@ -278,7 +283,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   ThemeData _dialogTheme(BuildContext context) {
     return Theme.of(context).copyWith(
-      dialogTheme: const DialogThemeData(backgroundColor: bgDark, elevation: 0),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppTheme.dialogBg(context),
+        elevation: 0,
+      ),
     );
   }
 
@@ -294,17 +302,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         data: _dialogTheme(context),
         child: AlertDialog(
           shape: _dialogShape,
-          title: const Text(
+          title: Text(
             'Cerrar sesión',
             style: TextStyle(
-              color: Colors.white,
+              color: AppTheme.textPrimary(context),
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
-          content: const Text(
+          content: Text(
             '¿Seguro que quieres cerrar sesión de tu cuenta?',
-            style: TextStyle(color: textMuted, fontSize: 14),
+            style: TextStyle(
+              color: AppTheme.textSecondary(context),
+              fontSize: 14,
+            ),
           ),
           actionsPadding: const EdgeInsets.only(
             bottom: 16,
@@ -315,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               style: TextButton.styleFrom(
-                foregroundColor: textMuted,
+                foregroundColor: AppTheme.textSecondary(context),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -325,7 +336,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: FilledButton.styleFrom(
-                backgroundColor: buttonBlue,
+                backgroundColor: AppTheme.buttonBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -355,17 +366,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         data: _dialogTheme(context),
         child: AlertDialog(
           shape: _dialogShape,
-          title: const Text(
+          title: Text(
             'Eliminar cuenta',
             style: TextStyle(
-              color: Colors.white,
+              color: AppTheme.textPrimary(context),
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
-          content: const Text(
+          content: Text(
             'Esta acción es permanente y destructiva. Se eliminarán todos tus datos de inmediato. ¿Continuar?',
-            style: TextStyle(color: textMuted, fontSize: 14),
+            style: TextStyle(
+              color: AppTheme.textSecondary(context),
+              fontSize: 14,
+            ),
           ),
           actionsPadding: const EdgeInsets.only(
             bottom: 16,
@@ -376,7 +390,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               style: TextButton.styleFrom(
-                foregroundColor: textMuted,
+                foregroundColor: AppTheme.textSecondary(context),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

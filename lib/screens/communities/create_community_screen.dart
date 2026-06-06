@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/community_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/theme/app_theme.dart';
 
 class CreateCommunityScreen extends StatefulWidget {
   const CreateCommunityScreen({super.key});
@@ -17,13 +18,6 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
   int _durationWeeks = 4;
 
   static const _durations = [1, 2, 4, 8, 12, 24];
-
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
-  static const Color gradientStart = Color(0xFF131C35);
-  static const Color gradientEnd = Color(0xFF040712);
 
   @override
   void dispose() {
@@ -70,11 +64,11 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text(
+            iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
+            title: Text(
               'Nueva comunidad',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -84,15 +78,8 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
             width: double.infinity,
             height: double.infinity,
             decoration: isDesktop
-                ? const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment(0.0, -0.2),
-                      radius: 1.3,
-                      colors: [gradientStart, gradientEnd],
-                      stops: [0.0, 1.0],
-                    ),
-                  )
-                : const BoxDecoration(color: bgDark),
+                ? AppTheme.gradientDecoration(context)
+                : BoxDecoration(color: AppTheme.scaffoldBg(context)),
             child: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
@@ -105,10 +92,10 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                           : EdgeInsets.zero,
                       decoration: isDesktop
                           ? BoxDecoration(
-                              color: bgDark.withValues(alpha: 0.6),
+                              color: AppTheme.cardBackground(context),
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.06),
+                                color: AppTheme.borderColor(context),
                               ),
                             )
                           : const BoxDecoration(),
@@ -120,7 +107,9 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                             TextFormField(
                               controller: _nameCtrl,
                               maxLength: 100,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: AppTheme.textPrimary(context),
+                              ),
                               buildCounter:
                                   (
                                     context, {
@@ -129,6 +118,7 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                     maxLength,
                                   }) => null,
                               decoration: _inputDecoration(
+                                context: context,
                                 label: 'Nombre de la comunidad',
                                 icon: Icons.group_outlined,
                               ),
@@ -148,7 +138,9 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                               controller: _descCtrl,
                               maxLength: 500,
                               maxLines: 4,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: AppTheme.textPrimary(context),
+                              ),
                               buildCounter:
                                   (
                                     context, {
@@ -157,24 +149,28 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                     maxLength,
                                   }) => null,
                               decoration: _inputDecoration(
+                                context: context,
                                 label: 'Descripción',
                                 icon: Icons.description_outlined,
                               ).copyWith(alignLabelWithHint: true),
                             ),
                             const SizedBox(height: 28),
 
-                            const Text(
+                            Text(
                               'Duración',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: AppTheme.textPrimary(context),
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 6),
-                            const Text(
+                            Text(
                               'La comunidad dejará de aceptar nuevas publicaciones al finalizar la duración.',
-                              style: TextStyle(color: textMuted, fontSize: 13),
+                              style: TextStyle(
+                                color: AppTheme.textSecondary(context),
+                                fontSize: 13,
+                              ),
                             ),
                             const SizedBox(height: 16),
 
@@ -189,23 +185,25 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                     style: TextStyle(
                                       color: selected
                                           ? Colors.white
-                                          : textMuted,
+                                          : AppTheme.textSecondary(context),
                                       fontWeight: selected
                                           ? FontWeight.bold
                                           : FontWeight.normal,
                                     ),
                                   ),
                                   selected: selected,
-                                  selectedColor: buttonBlue,
-                                  backgroundColor: bgDark,
+                                  selectedColor: AppTheme.buttonBlue,
+                                  backgroundColor: AppTheme.scaffoldBg(context),
                                   checkmarkColor: Colors.white,
                                   showCheckmark: false,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20),
                                     side: BorderSide(
                                       color: selected
-                                          ? buttonBlue
-                                          : textMuted.withValues(alpha: 0.4),
+                                          ? AppTheme.buttonBlue
+                                          : AppTheme.textSecondary(
+                                              context,
+                                            ).withValues(alpha: 0.4),
                                     ),
                                   ),
                                   onSelected: (_) =>
@@ -220,7 +218,7 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
                               child: FilledButton(
                                 onPressed: isLoading ? null : _submit,
                                 style: FilledButton.styleFrom(
-                                  backgroundColor: buttonBlue,
+                                  backgroundColor: AppTheme.buttonBlue,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
@@ -266,24 +264,31 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
   }
 
   InputDecoration _inputDecoration({
+    required BuildContext context,
     required String label,
     required IconData icon,
   }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: textMuted),
-      prefixIcon: Icon(icon, color: textMuted),
-      enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: textMuted),
+      labelStyle: TextStyle(color: AppTheme.textSecondary(context)),
+      prefixIcon: Icon(icon, color: AppTheme.textSecondary(context)),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: AppTheme.textSecondary(context).withValues(alpha: 0.4),
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: accentBlue),
+        borderSide: BorderSide(color: AppTheme.accentBlue),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       errorBorder: const OutlineInputBorder(
         borderSide: BorderSide(color: Colors.redAccent),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       focusedErrorBorder: const OutlineInputBorder(
         borderSide: BorderSide(color: Colors.redAccent, width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );
   }

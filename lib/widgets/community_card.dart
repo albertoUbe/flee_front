@@ -9,9 +9,6 @@ class CommunityCard extends StatelessWidget {
   final bool isMember;
   final VoidCallback? onFollowTap;
 
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-
   const CommunityCard({
     super.key,
     required this.community,
@@ -29,9 +26,9 @@ class CommunityCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.6),
+        color: AppTheme.cardBackground(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: AppTheme.borderColor(context)),
       ),
       child: InkWell(
         onTap: onTap,
@@ -49,8 +46,8 @@ class CommunityCard extends StatelessWidget {
                       community.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary(context),
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
@@ -69,7 +66,10 @@ class CommunityCard extends StatelessWidget {
                   community.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: textMuted, fontSize: 13),
+                  style: TextStyle(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 13,
+                  ),
                 ),
               ],
               const SizedBox(height: 12),
@@ -78,14 +78,14 @@ class CommunityCard extends StatelessWidget {
                   Icon(
                     Icons.timer_outlined,
                     size: 13,
-                    color: textMuted.withValues(alpha: 0.7),
+                    color: AppTheme.iconMuted(context),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     DateFormatter.communityEndLabel(community.endDate),
                     style: TextStyle(
                       fontSize: 11,
-                      color: textMuted.withValues(alpha: 0.7),
+                      color: AppTheme.iconMuted(context),
                     ),
                   ),
                   const Spacer(),
@@ -164,8 +164,8 @@ class _FollowButton extends StatelessWidget {
         icon: const Icon(Icons.check, size: 13),
         label: const Text('Siguiendo', style: TextStyle(fontSize: 11)),
         style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF42A5F5),
-          side: const BorderSide(color: Color(0xFF42A5F5), width: 1),
+          foregroundColor: AppTheme.accentBlue,
+          side: const BorderSide(color: AppTheme.accentBlue, width: 1),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           minimumSize: Size.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -177,7 +177,7 @@ class _FollowButton extends StatelessWidget {
       icon: const Icon(Icons.add, size: 13),
       label: const Text('Unirse', style: TextStyle(fontSize: 11)),
       style: FilledButton.styleFrom(
-        backgroundColor: const Color(0xFF1E88E5),
+        backgroundColor: AppTheme.buttonBlue,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         minimumSize: Size.zero,

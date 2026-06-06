@@ -5,6 +5,7 @@ import '../../providers/community_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/community_card.dart';
 import '../../widgets/loading_indicator.dart';
+import '../../core/theme/app_theme.dart';
 import 'community_detail_screen.dart';
 import 'create_community_screen.dart';
 
@@ -18,11 +19,6 @@ class CommunitiesScreen extends StatefulWidget {
 class _CommunitiesScreenState extends State<CommunitiesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
 
   @override
   void initState() {
@@ -62,19 +58,19 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
             elevation: 0,
             automaticallyImplyLeading: false,
             title: isDesktop
-                ? const Text(
+                ? Text(
                     'Comunidades',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.textPrimary(context),
                       fontWeight: FontWeight.bold,
                     ),
                   )
                 : null,
             bottom: TabBar(
               controller: _tabController,
-              indicatorColor: accentBlue,
-              labelColor: Colors.white,
-              unselectedLabelColor: textMuted,
+              indicatorColor: AppTheme.accentBlue,
+              labelColor: AppTheme.textPrimary(context),
+              unselectedLabelColor: AppTheme.textSecondary(context),
               labelStyle: const TextStyle(fontWeight: FontWeight.bold),
               tabs: const [
                 Tab(text: 'Mis comunidades'),
@@ -99,7 +95,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
                   ),
           ),
           floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: buttonBlue,
+            backgroundColor: AppTheme.accentBlue,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
@@ -131,15 +127,22 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
   ) {
     final list = communities.myCommunities;
     if (list.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.group_outlined, size: 64, color: textMuted),
-            SizedBox(height: 16),
+            Icon(
+              Icons.group_outlined,
+              size: 64,
+              color: AppTheme.textSecondary(context),
+            ),
+            const SizedBox(height: 16),
             Text(
               'Aún no sigues ninguna comunidad',
-              style: TextStyle(color: textMuted, fontSize: 16),
+              style: TextStyle(
+                color: AppTheme.textSecondary(context),
+                fontSize: 16,
+              ),
             ),
           ],
         ),
@@ -147,8 +150,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
     }
     return RefreshIndicator(
       onRefresh: _loadData,
-      color: accentBlue,
-      backgroundColor: bgDark,
+      color: AppTheme.accentBlue,
+      backgroundColor: AppTheme.scaffoldBg(context),
       child: _buildResponsiveGrid(list, userId, true, isDesktop),
     );
   }
@@ -161,17 +164,20 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
     final myIds = communities.myCommunities.map((c) => c.id).toSet();
     final list = communities.allCommunities;
     if (list.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No hay comunidades disponibles',
-          style: TextStyle(color: textMuted, fontSize: 16),
+          style: TextStyle(
+            color: AppTheme.textSecondary(context),
+            fontSize: 16,
+          ),
         ),
       );
     }
     return RefreshIndicator(
       onRefresh: _loadData,
-      color: accentBlue,
-      backgroundColor: bgDark,
+      color: AppTheme.accentBlue,
+      backgroundColor: AppTheme.scaffoldBg(context),
       child: _buildResponsiveGrid(list, userId, false, isDesktop, myIds),
     );
   }

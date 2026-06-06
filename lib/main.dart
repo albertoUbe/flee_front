@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_dark_light.dart';
-
-import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/community_provider.dart';
 import 'providers/post_provider.dart';
@@ -46,11 +44,19 @@ class FleeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = context.watch<AuthProvider>().isLoggedIn;
-    return MaterialApp(
-      title: 'Flee',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      home: isLoggedIn ? const MainShell() : const LoginScreen(),
+
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          title: 'Flee',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: mode,
+          home: isLoggedIn ? const MainShell() : const LoginScreen(),
+        );
+      },
     );
   }
 }

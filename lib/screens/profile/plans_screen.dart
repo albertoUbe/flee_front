@@ -4,6 +4,7 @@ import '../../providers/plan_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/plan_model.dart';
 import '../../widgets/loading_indicator.dart';
+import '../../core/theme/app_theme.dart';
 
 class PlansScreen extends StatefulWidget {
   const PlansScreen({super.key});
@@ -13,14 +14,6 @@ class PlansScreen extends StatefulWidget {
 }
 
 class _PlansScreenState extends State<PlansScreen> {
-  // Paleta de colores unificada y compartida de Flee
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
-  static const Color gradientStart = Color(0xFF131C35);
-  static const Color gradientEnd = Color(0xFF040712);
-
   @override
   void initState() {
     super.initState();
@@ -39,15 +32,15 @@ class _PlansScreenState extends State<PlansScreen> {
         final bool isDesktop = constraints.maxWidth > 600;
 
         return Scaffold(
-          backgroundColor: bgDark,
+          backgroundColor: AppTheme.scaffoldBg(context),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text(
+            iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
+            title: Text(
               'Planes de suscripción',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -57,15 +50,8 @@ class _PlansScreenState extends State<PlansScreen> {
             width: double.infinity,
             height: double.infinity,
             decoration: isDesktop
-                ? const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment(0.0, -0.2),
-                      radius: 1.3,
-                      colors: [gradientStart, gradientEnd],
-                      stops: [0.0, 1.0],
-                    ),
-                  )
-                : const BoxDecoration(color: bgDark),
+                ? AppTheme.gradientDecoration(context)
+                : BoxDecoration(color: AppTheme.scaffoldBg(context)),
             child: SafeArea(
               child: Center(
                 child: planProvider.isLoading
@@ -77,22 +63,24 @@ class _PlansScreenState extends State<PlansScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(32),
                             decoration: BoxDecoration(
-                              color: bgDark.withValues(alpha: 0.6),
+                              color: AppTheme.cardBackground(context),
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.06),
+                                color: AppTheme.borderColor(context),
                               ),
                             ),
                             child: planProvider.plans.isEmpty
-                                ? const Center(
+                                ? Center(
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                         vertical: 32,
                                       ),
                                       child: Text(
                                         'No hay planes disponibles',
                                         style: TextStyle(
-                                          color: textMuted,
+                                          color: AppTheme.textSecondary(
+                                            context,
+                                          ),
                                           fontSize: 16,
                                         ),
                                       ),
@@ -102,19 +90,21 @@ class _PlansScreenState extends State<PlansScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Elige tu nivel',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: AppTheme.textPrimary(context),
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      const Text(
+                                      Text(
                                         'Desbloquea más funciones y expande tus límites en las comunidades.',
                                         style: TextStyle(
-                                          color: textMuted,
+                                          color: AppTheme.textSecondary(
+                                            context,
+                                          ),
                                           fontSize: 13,
                                         ),
                                       ),
@@ -156,19 +146,18 @@ class _PlanCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        // Integrado de forma fluida en el contenedor de la Card flotante principal
-        color: const Color(0xFF0F172A).withValues(alpha: isActive ? 0.8 : 0.4),
+        color: AppTheme.headerBg(
+          context,
+        ).withValues(alpha: isActive ? 0.8 : 0.4),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isActive
-              ? _PlansScreenState.accentBlue
-              : Colors.white.withValues(alpha: 0.04),
+          color: isActive ? AppTheme.accentBlue : AppTheme.borderColor(context),
           width: isActive ? 1.5 : 1.0,
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: _PlansScreenState.accentBlue.withValues(alpha: 0.1),
+                  color: AppTheme.accentBlue.withValues(alpha: 0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -189,8 +178,8 @@ class _PlanCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     color: isActive
-                        ? _PlansScreenState.accentBlue
-                        : Colors.white,
+                        ? AppTheme.accentBlue
+                        : AppTheme.textPrimary(context),
                   ),
                 ),
                 if (isActive)
@@ -200,22 +189,18 @@ class _PlanCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _PlansScreenState.buttonBlue.withValues(
-                        alpha: 0.2,
-                      ),
+                      color: AppTheme.buttonBlue.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _PlansScreenState.buttonBlue.withValues(
-                          alpha: 0.5,
-                        ),
+                        color: AppTheme.buttonBlue.withValues(alpha: 0.5),
                         width: 1,
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Tu plan',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.white,
+                        color: AppTheme.textPrimary(context),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -228,7 +213,9 @@ class _PlanCard extends StatelessWidget {
                   ? 'Gratis'
                   : '${plan.price.toStringAsFixed(2)} € / mes',
               style: TextStyle(
-                color: plan.price == 0 ? const Color(0xFF4CAF50) : Colors.white,
+                color: plan.price == 0
+                    ? const Color(0xFF4CAF50)
+                    : AppTheme.textPrimary(context),
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -262,12 +249,15 @@ class _FeatureRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: _PlansScreenState.textMuted),
+        Icon(icon, size: 18, color: AppTheme.textSecondary(context)),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(
+              color: AppTheme.textPrimary(context).withValues(alpha: 0.7),
+              fontSize: 14,
+            ),
           ),
         ),
       ],

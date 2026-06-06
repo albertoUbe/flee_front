@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/user_avatar.dart';
+import '../../core/theme/app_theme.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -22,13 +23,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late String _currentAvatarUrl;
 
   final _picker = ImagePicker();
-
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
-  static const Color gradientStart = Color(0xFF131C35);
-  static const Color gradientEnd = Color(0xFF040712);
 
   @override
   void initState() {
@@ -127,7 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onTap: _pickImage,
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: buttonBlue,
+                    color: AppTheme.buttonBlue,
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(8),
@@ -145,11 +139,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           onPressed: _pickImage,
           icon: const Icon(
             Icons.add_photo_alternate_outlined,
-            color: accentBlue,
+            color: AppTheme.accentBlue,
           ),
           label: const Text(
             'Cambiar foto de perfil',
-            style: TextStyle(color: accentBlue, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: AppTheme.accentBlue,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -166,25 +163,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         return Container(
           decoration: isDesktop
-              ? const BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment(0.0, -0.2),
-                    radius: 1.3,
-                    colors: [gradientStart, gradientEnd],
-                    stops: [0.0, 1.0],
-                  ),
-                )
-              : const BoxDecoration(color: bgDark),
+              ? AppTheme.gradientDecoration(context)
+              : BoxDecoration(color: AppTheme.scaffoldBg(context)),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.white),
-              title: const Text(
+              iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
+              title: Text(
                 'Editar perfil',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.textPrimary(context),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -204,10 +194,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           : EdgeInsets.zero,
                       decoration: isDesktop
                           ? BoxDecoration(
-                              color: bgDark.withValues(alpha: 0.6),
+                              color: AppTheme.cardBackground(context),
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.06),
+                                color: AppTheme.borderColor(context),
                               ),
                             )
                           : const BoxDecoration(),
@@ -223,7 +213,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             TextFormField(
                               controller: _nameCtrl,
                               maxLength: 100,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: AppTheme.textPrimary(context),
+                              ),
                               buildCounter:
                                   (
                                     context, {
@@ -232,6 +224,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     maxLength,
                                   }) => null,
                               decoration: _inputDecoration(
+                                context: context,
                                 label: 'Nombre',
                                 icon: Icons.person_outlined,
                               ),
@@ -249,7 +242,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               controller: _bioCtrl,
                               maxLength: 500,
                               maxLines: 3,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: AppTheme.textPrimary(context),
+                              ),
                               buildCounter:
                                   (
                                     context, {
@@ -258,6 +253,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     maxLength,
                                   }) => null,
                               decoration: _inputDecoration(
+                                context: context,
                                 label: 'Biografía',
                                 icon: Icons.info_outline,
                               ).copyWith(alignLabelWithHint: true),
@@ -269,7 +265,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: FilledButton(
                                 onPressed: isLoading ? null : _submit,
                                 style: FilledButton.styleFrom(
-                                  backgroundColor: buttonBlue,
+                                  backgroundColor: AppTheme.buttonBlue,
                                   foregroundColor: Colors.white,
                                   minimumSize: const Size(0, 48),
                                   padding: const EdgeInsets.symmetric(
@@ -315,19 +311,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   InputDecoration _inputDecoration({
+    required BuildContext context,
     required String label,
     required IconData icon,
   }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: textMuted),
-      prefixIcon: Icon(icon, color: textMuted),
+      labelStyle: TextStyle(color: AppTheme.textSecondary(context)),
+      prefixIcon: Icon(icon, color: AppTheme.textSecondary(context)),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: textMuted.withValues(alpha: 0.4)),
+        borderSide: BorderSide(
+          color: AppTheme.textSecondary(context).withValues(alpha: 0.4),
+        ),
         borderRadius: BorderRadius.circular(12),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: accentBlue),
+        borderSide: const BorderSide(color: AppTheme.accentBlue),
         borderRadius: BorderRadius.circular(12),
       ),
       errorBorder: OutlineInputBorder(

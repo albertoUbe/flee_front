@@ -23,14 +23,6 @@ class CommunityDetailScreen extends StatefulWidget {
 class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
   late CommunityModel _community;
 
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
-  static const Color gradientStart = Color(0xFF131C35);
-  static const Color gradientEnd = Color(0xFF040712);
-  static const Color dialogBg = Color(0xFF131C35);
-
   @override
   void initState() {
     super.initState();
@@ -42,7 +34,7 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
 
   ShapeBorder get _dialogShape => RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(20),
-    side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+    side: BorderSide(color: AppTheme.borderColor(context)),
   );
 
   @override
@@ -59,19 +51,19 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
         final bool isDesktop = constraints.maxWidth > 600;
 
         return Scaffold(
-          backgroundColor: bgDark,
+          backgroundColor: AppTheme.scaffoldBg(context),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
+            iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   _community.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: AppTheme.textPrimary(context),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -101,8 +93,11 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
             actions: [
               if (isCreator)
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert, color: Colors.white),
-                  color: dialogBg,
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                  color: AppTheme.dialogBg(context),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -111,11 +106,11 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
                     if (value == 'delete') _deleteCommunity();
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'edit',
                       child: Text(
                         'Editar',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppTheme.textPrimary(context)),
                       ),
                     ),
                     const PopupMenuItem(
@@ -134,15 +129,8 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
             width: double.infinity,
             height: double.infinity,
             decoration: isDesktop
-                ? const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment(0.0, -0.2),
-                      radius: 1.3,
-                      colors: [gradientStart, gradientEnd],
-                      stops: [0.0, 1.0],
-                    ),
-                  )
-                : const BoxDecoration(color: bgDark),
+                ? AppTheme.gradientDecoration(context)
+                : BoxDecoration(color: AppTheme.scaffoldBg(context)),
             child: SafeArea(
               child: Center(
                 child: Padding(
@@ -151,10 +139,10 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
                     constraints: const BoxConstraints(maxWidth: 600),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: bgDark.withValues(alpha: 0.6),
+                        color: AppTheme.cardBackground(context),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.06),
+                          color: AppTheme.borderColor(context),
                         ),
                       ),
                       child: ClipRRect(
@@ -182,7 +170,7 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
           ),
           floatingActionButton: _community.isActive
               ? FloatingActionButton(
-                  backgroundColor: buttonBlue,
+                  backgroundColor: AppTheme.buttonBlue,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -214,9 +202,9 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.4),
+        color: AppTheme.headerBg(context),
         border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.04)),
+          bottom: BorderSide(color: AppTheme.borderColor(context)),
         ),
       ),
       child: Column(
@@ -225,8 +213,8 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
           if (_community.description.isNotEmpty) ...[
             Text(
               _community.description,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppTheme.textPrimary(context),
                 fontSize: 14,
                 height: 1.4,
               ),
@@ -235,16 +223,19 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
           ],
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.calendar_today_outlined,
                 size: 14,
-                color: textMuted,
+                color: AppTheme.textSecondary(context),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   DateFormatter.communityEndLabel(_community.endDate),
-                  style: const TextStyle(color: textMuted, fontSize: 12),
+                  style: TextStyle(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
@@ -252,12 +243,19 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.archive_outlined, size: 14, color: textMuted),
+              Icon(
+                Icons.archive_outlined,
+                size: 14,
+                color: AppTheme.textSecondary(context),
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   'Archiva: ${DateFormatter.formatDate(_community.ghostDate)}',
-                  style: const TextStyle(color: textMuted, fontSize: 12),
+                  style: TextStyle(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
@@ -274,18 +272,22 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
         onRefresh: () => postProvider.loadCommunityPosts(_community.id),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          children: const [
-            SizedBox(height: 100),
+          children: [
+            const SizedBox(height: 100),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.post_add_outlined, size: 56, color: textMuted),
-                  SizedBox(height: 12),
+                  Icon(
+                    Icons.post_add_outlined,
+                    size: 56,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                  const SizedBox(height: 12),
                   Text(
                     'Sin posts todavía',
                     style: TextStyle(
-                      color: textMuted,
+                      color: AppTheme.textSecondary(context),
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -329,20 +331,26 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: dialogBg,
+        backgroundColor: AppTheme.dialogBg(context),
         shape: _dialogShape,
-        title: const Text(
+        title: Text(
           'Eliminar post',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
+        content: Text(
           '¿Eliminar este post definitivamente?',
-          style: TextStyle(color: textMuted),
+          style: TextStyle(color: AppTheme.textSecondary(context)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: AppTheme.textSecondary(context)),
+            ),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -371,20 +379,26 @@ class _CommunityDetailScreenState extends State<CommunityDetailScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: dialogBg,
+        backgroundColor: AppTheme.dialogBg(context),
         shape: _dialogShape,
-        title: const Text(
+        title: Text(
           'Eliminar comunidad',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
+        content: Text(
           'Esta acción es irreversible. ¿Eliminar la comunidad y todos sus posts?',
-          style: TextStyle(color: textMuted),
+          style: TextStyle(color: AppTheme.textSecondary(context)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: AppTheme.textSecondary(context)),
+            ),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),

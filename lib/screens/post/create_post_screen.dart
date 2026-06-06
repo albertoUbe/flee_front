@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/post_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/theme/app_theme.dart';
 
 class CreatePostScreen extends StatefulWidget {
   final int communityId;
@@ -20,14 +21,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   XFile? _pickedImage;
   Uint8List? _imageBytes;
   final _picker = ImagePicker();
-
-  // Paleta de colores unificada y compartida de Flee
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-  static const Color buttonBlue = Color(0xFF1E88E5);
-  static const Color gradientStart = Color(0xFF131C35);
-  static const Color gradientEnd = Color(0xFF040712);
 
   @override
   void dispose() {
@@ -93,29 +86,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
         return Container(
           decoration: isDesktop
-              ? const BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment(0.0, -0.2),
-                    radius: 1.3,
-                    colors: [gradientStart, gradientEnd],
-                    stops: [0.0, 1.0],
-                  ),
-                )
-              : const BoxDecoration(color: bgDark),
+              ? AppTheme.gradientDecoration(context)
+              : BoxDecoration(color: AppTheme.scaffoldBg(context)),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.white),
-              title: const Text(
+              iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
+              title: Text(
                 'Nueva publicación',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.textPrimary(context),
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              // Se eliminaron las acciones (actions) que contenían el antiguo botón superior derecho
             ),
             body: SafeArea(
               child: Center(
@@ -132,10 +117,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           : EdgeInsets.zero,
                       decoration: isDesktop
                           ? BoxDecoration(
-                              color: bgDark.withValues(alpha: 0.6),
+                              color: AppTheme.cardBackground(context),
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.06),
+                                color: AppTheme.borderColor(context),
                               ),
                             )
                           : const BoxDecoration(),
@@ -144,10 +129,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               '¿Qué está pasando?',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: AppTheme.textPrimary(context),
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -158,7 +143,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               maxLength: 1000,
                               maxLines: 6,
                               autofocus: true,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: AppTheme.textPrimary(context),
+                              ),
                               buildCounter:
                                   (
                                     context, {
@@ -169,16 +156,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               decoration: InputDecoration(
                                 hintText:
                                     'Escribe el contenido de tu post aquí...',
-                                hintStyle: const TextStyle(color: textMuted),
+                                hintStyle: TextStyle(
+                                  color: AppTheme.textSecondary(context),
+                                ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: textMuted.withValues(alpha: 0.3),
+                                    color: AppTheme.textSecondary(
+                                      context,
+                                    ).withValues(alpha: 0.3),
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
-                                    color: accentBlue,
+                                    color: AppTheme.accentBlue,
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -211,9 +202,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                     borderRadius: BorderRadius.circular(16),
                                     child:
                                         Border.all(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.06,
-                                          ),
+                                          color: AppTheme.borderColor(context),
                                         ).wrap(
                                           Image.memory(
                                             _imageBytes!,
@@ -247,48 +236,45 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             ] else ...[
                               OutlinedButton.icon(
                                 onPressed: _pickImage,
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.add_photo_alternate_outlined,
-                                  color: textMuted,
+                                  color: AppTheme.textSecondary(context),
                                 ),
-                                label: const Text(
+                                label: Text(
                                   'Añadir imagen de portada',
                                   style: TextStyle(
-                                    color: Colors.white70,
+                                    color: AppTheme.textPrimary(
+                                      context,
+                                    ).withValues(alpha: 0.7),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 52),
                                   side: BorderSide(
-                                    color: textMuted.withValues(alpha: 0.3),
+                                    color: AppTheme.textSecondary(
+                                      context,
+                                    ).withValues(alpha: 0.3),
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  backgroundColor: const Color(
-                                    0xFF0F172A,
-                                  ).withValues(alpha: 0.4),
+                                  backgroundColor: AppTheme.headerBg(context),
                                 ),
                               ),
                             ],
                             const SizedBox(height: 36),
 
-                            // Botón de Enviar (Ajustado exactamente a su contenido)
                             Align(
                               alignment: Alignment.center,
                               child: FilledButton(
                                 onPressed: isLoading ? null : _submit,
                                 style: FilledButton.styleFrom(
-                                  backgroundColor: buttonBlue,
+                                  backgroundColor: AppTheme.buttonBlue,
                                   foregroundColor: Colors.white,
-                                  minimumSize: const Size(
-                                    0,
-                                    48,
-                                  ), // Ancho dinámico mínimo 0, altura táctil 48px
+                                  minimumSize: const Size(0, 48),
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal:
-                                        40, // Margen simétrico para envolver el texto cómodamente
+                                    horizontal: 40,
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),

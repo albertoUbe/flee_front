@@ -4,6 +4,7 @@ import '../../providers/post_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/post_card.dart';
 import '../../widgets/loading_indicator.dart';
+import '../../core/theme/app_theme.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -13,10 +14,6 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  static const Color bgDark = Color(0xFF0A0F1F);
-  static const Color textMuted = Color(0xFF9BB4D1);
-  static const Color accentBlue = Color(0xFF42A5F5);
-
   @override
   void initState() {
     super.initState();
@@ -41,16 +38,19 @@ class _FeedScreenState extends State<FeedScreen> {
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   automaticallyImplyLeading: false,
-                  title: const Text(
+                  title: Text(
                     'Feed',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.textPrimary(context),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.refresh, color: textMuted),
+                      icon: Icon(
+                        Icons.refresh,
+                        color: AppTheme.textSecondary(context),
+                      ),
                       onPressed: () => context.read<PostProvider>().loadFeed(),
                     ),
                     const SizedBox(width: 16),
@@ -62,8 +62,8 @@ class _FeedScreenState extends State<FeedScreen> {
               : postProvider.feedPosts.isEmpty
               ? _buildEmpty()
               : RefreshIndicator(
-                  color: accentBlue,
-                  backgroundColor: bgDark,
+                  color: AppTheme.accentBlue,
+                  backgroundColor: AppTheme.scaffoldBg(context),
                   onRefresh: () => context.read<PostProvider>().loadFeed(),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -160,30 +160,37 @@ class _FeedScreenState extends State<FeedScreen> {
 
   Widget _buildEmpty() {
     return RefreshIndicator(
-      color: accentBlue,
-      backgroundColor: bgDark,
+      color: AppTheme.accentBlue,
+      backgroundColor: AppTheme.scaffoldBg(context),
       onRefresh: () => context.read<PostProvider>().loadFeed(),
       child: ListView(
-        children: const [
-          SizedBox(height: 140),
+        children: [
+          const SizedBox(height: 140),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.feed_outlined, size: 64, color: textMuted),
-                SizedBox(height: 16),
+                Icon(
+                  Icons.feed_outlined,
+                  size: 64,
+                  color: AppTheme.textSecondary(context),
+                ),
+                const SizedBox(height: 16),
                 Text(
                   'No hay posts todavía',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.textPrimary(context),
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Únete a una comunidad y crea el primero',
-                  style: TextStyle(color: textMuted, fontSize: 14),
+                  style: TextStyle(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 14,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -198,24 +205,30 @@ class _FeedScreenState extends State<FeedScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF131C35),
+        backgroundColor: AppTheme.dialogBg(context),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+          side: BorderSide(color: AppTheme.borderColor(context)),
         ),
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        title: const Text(
+        title: Text(
           'Eliminar post',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
+        content: Text(
           '¿Estás seguro de que quieres eliminar este post?',
-          style: TextStyle(color: textMuted),
+          style: TextStyle(color: AppTheme.textSecondary(context)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar', style: TextStyle(color: textMuted)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: AppTheme.textSecondary(context)),
+            ),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),

@@ -66,11 +66,13 @@ class PostProvider extends ChangeNotifier {
   Future<void> vote(int postId, int userId) async {
     // Optimistic update
     final wasVoted = _votedPostIds.contains(postId);
+    final delta = wasVoted ? -1 : 1;
     if (wasVoted) {
       _votedPostIds.remove(postId);
     } else {
       _votedPostIds.add(postId);
     }
+    _applyVoteCountDelta(postId, delta);
     notifyListeners();
 
     try {
@@ -82,7 +84,21 @@ class PostProvider extends ChangeNotifier {
       } else {
         _votedPostIds.remove(postId);
       }
+      _applyVoteCountDelta(postId, -delta);
       notifyListeners();
+    }
+  }
+
+  void _applyVoteCountDelta(int postId, int delta) {
+    _feedPosts = _feedPosts.map((p) {
+      if (p.id != postId) return p;
+      return p.copyWith(voteCount: (p.voteCount + delta).clamp(0, 999999));
+    }).toList();
+    for (final key in _communityPosts.keys) {
+      _communityPosts[key] = _communityPosts[key]!.map((p) {
+        if (p.id != postId) return p;
+        return p.copyWith(voteCount: (p.voteCount + delta).clamp(0, 999999));
+      }).toList();
     }
   }
 

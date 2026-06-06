@@ -18,6 +18,15 @@ class CommunityProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  CommunityModel? communityById(int id) {
+    final combined = [..._allCommunities, ..._myCommunities];
+    try {
+      return combined.firstWhere((c) => c.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> loadAllCommunities() async {
     _setLoading(true);
     try {

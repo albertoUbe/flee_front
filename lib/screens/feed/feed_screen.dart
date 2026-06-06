@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/post_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/community_provider.dart';
 import '../../widgets/post_card.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../core/theme/app_theme.dart';
+import '../communities/community_detail_screen.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -19,6 +21,7 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PostProvider>().loadFeed();
+      context.read<CommunityProvider>().loadAllCommunities();
     });
   }
 
@@ -108,6 +111,7 @@ class _FeedScreenState extends State<FeedScreen> {
               onDeleteTap: currentUser != null && currentUser.id == post.userId
                   ? () => _deletePost(post.id, post.communityId)
                   : null,
+              onTap: () => _openCommunity(post.communityId),
             ),
           );
         }).toList(),
@@ -137,6 +141,7 @@ class _FeedScreenState extends State<FeedScreen> {
             onDeleteTap: currentUser != null && currentUser.id == post.userId
                 ? () => _deletePost(post.id, post.communityId)
                 : null,
+            onTap: () => _openCommunity(post.communityId),
           ),
         ),
       );
@@ -155,6 +160,18 @@ class _FeedScreenState extends State<FeedScreen> {
           ),
         );
       }).toList(),
+    );
+  }
+
+  void _openCommunity(int communityId) {
+    final community =
+        context.read<CommunityProvider>().communityById(communityId);
+    if (community == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CommunityDetailScreen(community: community),
+      ),
     );
   }
 

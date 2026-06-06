@@ -3,6 +3,7 @@ import 'package:flee_front/core/theme/theme_dark_light.dart';
 import 'package:flutter/material.dart';
 import 'feed/feed_screen.dart';
 import 'communities/communities_screen.dart';
+import 'communities/discover_screen.dart';
 import 'profile/profile_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -17,15 +18,26 @@ class _MainShellState extends State<MainShell> {
 
   static const String pathLogo = "assets/images/flee_logo_blue.png";
 
-  static const _labels = ['Feed', 'Comunidades', 'Perfil'];
+  static const _labels = ['Feed', 'Comunidades', 'Descubrir', 'Perfil'];
   static const _icons = [
     Icons.home_outlined,
     Icons.group_outlined,
+    Icons.explore_outlined,
     Icons.person_outlined,
   ];
-  static const _activeIcons = [Icons.home, Icons.group, Icons.person];
+  static const _activeIcons = [
+    Icons.home,
+    Icons.group,
+    Icons.explore,
+    Icons.person,
+  ];
 
-  static const _tabs = [FeedScreen(), CommunitiesScreen(), ProfileScreen()];
+  static const _tabs = [
+    FeedScreen(),
+    CommunitiesScreen(),
+    DiscoverScreen(),
+    ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {

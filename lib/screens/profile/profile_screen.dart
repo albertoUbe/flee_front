@@ -16,7 +16,9 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+// SOLUCIÓN: Se agregó "with WidgetsBindingObserver" para solucionar el error de compilación
+class _ProfileScreenState extends State<ProfileScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -207,8 +209,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 4, bottom: 8),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
                               'ZONA DE SEGURIDAD',
                               style: TextStyle(
